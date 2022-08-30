@@ -84,31 +84,54 @@
 		var buy_num = $("#num").val();			//购买数量
 		var total_num = $("#data_num").data("num");
 		var price = $("#price").data("price")  //单价
-		var get_user = $("#login_user").text(); //用户名
+		// var get_user = $("#login_user").text(); //用户名
 		// alert(receive_means)
 		if(buy_num>total_num){
 			alert("购买超出库存")
 		}else {
 			$.post("/user/detail/submitCart",{
-				"user_name": get_user,
+				// "user_name": get_user,
 				"name": get_name,
 				"buy_num": buy_num,
 				"buy_price": price,
 				"total_price": buy_num*price,
 				"get_goods": receive_means
 			}, function (data, state) {
-				if(data["error_info"]){
+				if (data["error_info"]) {
 					alert(data["error_info"])
-				}else {
-					$.post("/user/detail/shoppCart",{"cartID": data})
+				} else {
+					$.post("/user/detail/shoppCart", {"cartID": data})
 					alert("已加入购物车")
 				}
 			})
 		}
 	})
 
+	$("#buy").click(function () {
+		var get_name = $("#get_name").text();
+		var buy_num = $("#num").val();			//购买数量
+		var total_num = $("#data_num").data("num");
+		var price = $("#price").data("price")  //单价
+		var get_user = $("#login_user").text(); //用户名
+		if (buy_num > total_num) {
+			alert("购买超出库存")
+		} else {
+			$.post("/user/order", {
+				"name": get_name,
+				"buy_num": buy_num,
+				"buy_price": price,
+				"total_price": buy_num * price,
+				"user_name": get_user,
+				"token": $.cookie('session_id')
+			}, function (data, state) {
+				console.log(data)
+			})
+		}
+
+	})
+
 	$("#show").click(function () {
-		location.href="/user/detail/shoppCart?user_name="+$("#login_user").text()+'&&token='+$.cookie('session_id')
+		location.href = "/user/detail/shoppCart?user_name=" + $("#login_user").text() + '&&token=' + $.cookie('session_id')
 	})
 </script>
 </html>

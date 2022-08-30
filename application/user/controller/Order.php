@@ -1,6 +1,7 @@
 <?php
 
 namespace app\user\controller;
+
 use think\App;
 use think\cache\driver\Redis;
 use think\facade\Session;
@@ -9,25 +10,25 @@ use think\Controller;
 use think\Db;
 
 Class Order extends Controller{
-    protected array $redis_options = [
-        'host'       => 's5.z100.vip',
-        'port'       => 39166,
-        'password'   => '',
-        'select'     => 2,
-        'timeout'    => 3600,
-        'expire'     => 0,
+    protected $redis_options = [
+        'host' => 's5.z100.vip',
+        'port' => 39166,
+        'password' => '',
+        'select' => 2,
+        'timeout' => 3600,
+        'expire' => 0,
         'persistent' => false,
-        'prefix'     => '',
-        'serialize'  => true,
+        'prefix' => '',
+        'serialize' => true,
     ];
-    private $queueMaxLength = 1000;  //队列最大长度
-    public string $user_name;
-    public Redis $await_redis;
-    public Redis $task_redis;
+    private $queueMaxLength = 2;  //队列最大长度
+    public $user_name;
+    public $await_redis;
+    public $task_redis;
     public $total;
-    public array $task_array = array();         //正在处理队列
-    public array $await_array = array();        //等待处理队列
-    protected array $task_option;
+    public $task_array = array();         //正在处理队列
+    public $await_array = array();        //等待处理队列
+    protected $task_option;
 
 
     public function __construct(App $app = null)
@@ -42,25 +43,20 @@ Class Order extends Controller{
     public function index(){
         //提交订单支付
         $data = $this->request->post();
-        if(!empty($data) && is_array($data)){
-            $this->user_name = $data["user_name"];
-        }
-
-        if(isset($this->user_name) && Session::get("user_name")==$this->user_name){
+        if ((new \app\user\common\LoginCheck)->check()) {
             $this->isJob($data);
-        }else{
+        } else {
             $this->error("未登录,返回登录页", "/user/user/login");
         }
     }
 
-    public function isJob($data_init)
+    public function isJob($data)
     {
-        $data = $data_init["order"];
-        if(!empty($data) && is_array($data)){
-            if(!is_null($this->task_redis->get("task_data"))){
+        if (!empty($data) && is_array($data)) {
+            if (!is_null($this->task_redis->get("task_data"))) {
                 //当库存不为空的时候才开始查询具体某件商品
-                $this->total = Db::name("commodity")->where("comm_reserve", $data["quantity"])->value("comm_reserve");
-            }else{
+                $this->total = Db::name("commodity")->where("comm_reserve", (int)$data["buy_num"])->value("comm_reserve");
+            } else {
                 // 如果库存为0直接排入等待处理队列中
                 $this->await_array[] = $data;
             }

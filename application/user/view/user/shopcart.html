@@ -67,17 +67,62 @@
 							</a>
 						</li>
 					</ul>
-<!--					<button class="btn btn-success" style="float: left;">立即付款</button>-->
-<!--					<button class="btn btn-danger" style="float: right;">清空购物车</button>-->
 				</nav>
-
 			</div>
 		</div>
+		<button class="btn btn-primary btn-lg" data-target="#myModal" data-toggle="modal">
+			开始演示模态框
+		</button>
+		<!-- 模态框（Modal） -->
+		<div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade" id="myModal" role="dialog"
+			 tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button aria-hidden="true" class="close" data-dismiss="modal" type="button">×
+						</button>
+						<h4 class="modal-title" id="myModalLabel">
+							订单提交验证
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div style="position: relative;left: 30%">
+							<label>
+								<h4 style="text-align: center">验证你的支付密码</h4>
+								<input class="form-control" name="password" type="password">
+							</label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-default" data-dismiss="modal" type="button">
+							关闭
+						</button>
+						<button class="btn btn-primary" id="modal_submit" type="button">
+							验证
+						</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 	</div>
 </body>
 {js href="__JS__/jquery-3.6.0.min.js"}
 {js href="__JS__/bootstrap.min.js"}
 {js href="__JS__/bootstrap-table.min.js"}
+<script>
+	$(function () {
+		$('#myModal').modal('hide')
+	});
+	$(function () {
+		$('#myModal').on('hide.bs.modal', function () {
+			alert('你取消了订单的提交');
+		})
+		return false;
+	});
+	$("#modal_submit").click(function () {
+		$.post("/user/user")
+	})
+</script>
 <script>
 	var unit_price = $("#unit_price").text()
 	var amount = $("#amount").text()
