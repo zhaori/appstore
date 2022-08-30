@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinStore后台管理</title>
+    {css href='__CSS__/bootstrap.min.css'}
+    {css href='__CSS__/bootstrap-table.min.css'}
+    <style>
+        .nav-title{font-size: 30px;font-family: 黑体,serif;}
+        .nav-title-title{font-size: 22px;font-family: 黑体,serif;position: relative;left: 50px;}
+        li.dropdown{font-size: 20px;}
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container" style="height: 60px;">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav" style="float: right;">
+                    <li class="dropdown dropdown-toggle">
+                        <a href="#">返回网站</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"><span class="glyphicon glyphicon-comment"></span>通知消息</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#"><span class="glyphicon glyphicon-envelope"></span>站内邮件</a>
+                    </li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="jumbotron" style="margin-top:80px">
+                <h1 style="text-align: center;">这是后台管理页面</h1>         
+            </div> 
+            <div class="col-md-2" style="width: 20%;height: 500px;">
+                <ul class="nav navbar-nav">
+                    <li style="margin-top:30px">
+                        <a class="nav-title" href="javascript:">商品管理</a>
+                            <ul class="nav navbar-nav nav-title-title">
+                                <li><a href="javascript:" class="btn-link" id="comm-store">上/下架商品</a></li>
+                                <li><a href="javascript:" class="btn-link" id="update">整理商品</a></li>
+                            </ul>
+                    </li>
+                    <!-- <li style="margin-top:30px">
+                        <a class="nav-title" href="javascript:">仓库管理</a>
+                            <ul class="nav navbar-nav nav-title-title">
+                                <li><a href="javascript:" class="btn-link">入库整理</a></li>
+                                <li><a href="javascript:" class="btn-link">无效处理</a></li>
+                                <li><a href="javascript:" class="btn-link">统计报告</a></li>
+                            </ul>
+                    </li> -->
+                    <li style="margin-top:30px">
+                        <a class="nav-title" href="javascript:">订单管理</a>
+                            <ul class ="nav navbar-nav nav-title-title">
+                                <li><a href="javascript:" class="btn-link">查看订单</a></li>                               
+                            </ul>
+                    </li>
+                    <li style="margin-top:30px">
+                        <a class="nav-title" href="javascript:">用户管理</a>
+                            <ul class="nav navbar-nav nav-title-title">                               
+                                <li><a href="javascript:" class="btn-link">用户管理</a></li>
+                                <li><a href="javascript:" class="btn-link">评论审核</a></li>
+                            </ul>
+                    </li>
+                    <li style="margin-top:30px">
+                        <a class="nav-title" href="javascript:">系统设置</a>
+                            <ul class="nav navbar-nav nav-title-title">                               
+                                <li><a href="javascript:" class="btn-link">评论设置</a></li>
+                                <li><a href="javascript:" class="btn-link">订单设置</a></li>
+                                <li><a href="javascript:" class="btn-link">管理员设置</a></li>
+                            </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-8" style="border: 1px solid red;width: 80%;height:600px;margin-top: -20px;">
+                
+            </div>
+        </div>
+        <nav class="navbar navbar-default navbar-fixed-bottom">
+            <div class="container">
+                <div id="navbar" class="navbar-collapse collapse">
+                   <h2>这是底部导航</h2>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </nav>
+    </div>
+</body>
+{js href='__JS__/jquery-3.6.0.min.js'}
+{js href='__JS__/bootstrap.min.js'}
+{js href='__JS__/bootstrap-table-zh-CN.min.js'}
+{js href='__JS__/bootstrap-table.min.js'}
+
+<script>
+    $('.nav-title-title').hide();
+    $('.nav-title').click(function(){
+        let data = $(this).next('ul');
+        if(data.is(':hidden')){
+            data.fadeIn()
+        }else{
+            data.fadeOut()
+        }         
+})
+</script>
+<script>
+    $('.btn-link').click(function(){
+        $(this).text()
+    })
+
+    $('#comm-store').click(function(){
+        location.href='/admin/Store'
+    })
+</script>
+</html>

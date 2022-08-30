@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{$title}</title>
+	{css href='__CSS__/bootstrap.min.css'}
+	<style>
+		input.form-control{width: 300px;height: 45px;}
+		div.col-md-2{font-size: 18px;position: relative;top:10px;right: 30px}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="form-group col-md-8" style="border: 1px solid red;position: relative;left: 21%;top: 150px">
+			<h1 style="text-align: center">登录</h1><br><br>
+			<div class="col-md-9" style="position: relative;left: 130px">
+				<div class="col-md-2">用户名</div>
+				<label class="form-group">
+					<input class="form-control" type="text" id="name">
+				</label><br><br>
+				<div class="col-md-2">密码</div>
+				<label class="form-group">
+					<input class="form-control" type="password" id="pwd">
+				</label><br><br>
+				<div class="checkbox-inline" style="position: relative;right: 2%">
+					<label>
+						<input type="checkbox" id="save_login_info">
+						记住密码
+					</label>
+				</div>
+				<div style="width: 100%;height: auto;position: relative;left: 30%;top: -20px">
+					<a href="javascript:" id="register" style="position: relative;top: -10px">没有账户？请点击注册</a>
+					<button type="button" class="btn-success btn-primary btn-sm" style="position: relative;left: 100px" id="login">登录</button>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</body>
+{js href='__JS__/jquery-3.6.0.min.js'}
+{js href='__JS__/sha256.js'}
+{js href='__JS__/jquery.cookie.min.js'}
+<script>
+
+</script>
+<script>
+	$("#register").click(function () {
+		location.href='/user/user/register'
+	})
+
+	$("#login").click(function () {
+		var user_name = $("#name").val();
+		var pwd = $("#pwd").val();
+		var ischeck = $("#save_login_info").prop('checked')
+
+		$.post("/user/user/verifyLogin", {'user_name':user_name, 'password':hex_sha256(pwd)},
+			function (data, state) {
+				if(data['state']===true){
+					$.cookie("session_id", data["session_id"],{expires: 30, path: '/'})
+					$.cookie("user_name",data['user_name'],{expires: 30, path: '/'})
+				}else {
+					$.cookie("session_id",data["session_id"],{expires: 1, path: '/'})
+					$.cookie("user_name", data['user_name'],{expires: 1, path: '/'})
+				}
+				location.href='/user/user?token='+data["session_id"];
+			}
+		)})
+				// function (data,state) {
+				// 	if(data["info"]===true){
+				// 		location.href='/user/user?user='+data["user"];
+				// 	}
+				// })
+	// })
+</script>
+</html>

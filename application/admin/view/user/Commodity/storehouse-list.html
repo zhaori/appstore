@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div class="col-md-10" style="border: 1px solid red;width:100%;height:300px;margin-top: 20px;">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover" id="shopping">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>单价（元）</th>
+                        <th>数量</th>
+                        <td>操作</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foreach $data as $key=>$value}
+                    <tr id="tr-del">
+                        <td data-name={$value.comm_name}>{$value.comm_name}</td>
+                        <td data-reserve={$value.comm_reserve}>{$value.comm_reserve}</td>
+                        <td data-quantity={$value.comm_quantity}>{$value.comm_quantity}</td>
+                        <td>
+                            <a class="del" href="javascript:" data-id="{$value.comm_id}">下架</a>|
+                            <a class="update" href="javascript:" data-id="{$value.comm_id}">修改</a>
+                        </td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+        <nav aria-label="Page navigation" style="position: absolute;top:220px;right: 34%;">
+            <ul class="pagination pagination-lg">
+                <li>
+                    <a href="javascript:;" aria-label="Previous" data-sm='1'>
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {for start="1" end='4'}
+                <li><a href="javascript:;" class="page_num" data-page={$i}>{$i}</a></li>
+                {/for}
+                <li><span>最大页数为{$MaxPage}</span></li>
+                <li>
+                    <a href="javascript:;" id="max" aria-label="Next" data-max={$MaxPage}>
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    
+</body>
+{js href="__JS__/my.js"}
+<script>
+    $(".del").click(function () {
+        var get_id = $(this).data('id');
+        $.post("/admin/Store/del", { 'id': get_id },
+            function (data, state) {
+                if (data == 'success') {
+                    $(this).closest('#tr-del').remove()
+                    location.reload()
+                }
+            })
+    })
+
+
+    $(".update").click(function () {
+        
+        var get_id = $(this).data('id');
+        console.log($(this).parent().parent().find('td').data("name"))
+        $.post("/admin/Store/update", { 'id': get_id },
+            function (data, state) {
+                openNewWindow("/admin/Store/edit", "修改",500,500)
+               
+            })
+    })
+
+    $("#submit_update").click(function () {
+        var name = $("#comm_id").val();
+        var num = $("#comm_num").val();
+        var price = $("#comm_price").val();
+        alert(alert_id)
+    })
+
+    $(".page_num").click(function () {
+        $.get("/admin/Store/false_frame", { "page": $(this).data('page') },
+            function (data, state) {
+                // alert(data)
+                alert('提示标题', data)
+            })
+    })
+
+    $("#max").click(function () {
+        $.get("/")
+    })
+</script>
+
+</html>

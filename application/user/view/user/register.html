@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$title}</title>
+    {css href='__CSS__/bootstrap.min.css'}
+    <style>
+        input.form-control{width: 300px;height: 45px;}
+        div.col-md-2{font-size: 18px;position: relative;top:10px;right: 30px}
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-group col-md-8" style="border: 1px solid red;position: relative;left: 21%;top: 100px">
+        <h1 style="text-align: center">注册</h1><br><br>
+        <div class="col-md-9" style="position: relative;left: 130px">
+            <div class="col-md-2">用户名</div>
+            <label class="form-group">
+                <input class="form-control" type="text" id="name">
+            </label><br><br>
+
+            <div class="col-md-2">密码</div>
+            <label class="form-group">
+                <input class="form-control" type="password" id="pwd">
+            </label><br><br>
+
+            <div class="col-md-2">重复</div>
+            <label class="form-group">
+                <input class="form-control" type="password" id="repeat-pwd">
+            </label><br><br>
+
+            <div class="col-md-2">Email</div>
+            <label class="form-group">
+                <input class="form-control" type="email" id="email">
+            </label><br><br>
+
+            <div class="col-md-2">电话</div>
+            <label class="form-group">
+                <input class="form-control" type="number" id="number">
+            </label><br><br>
+
+            <label class="form-group">
+                <button class="btn-lg btn-primary" style="position: relative;left: 300px" id="register">注册</button>
+            </label>
+        </div>
+    </div>
+
+</div>
+</body>
+{js href='__JS__/jquery-3.6.0.min.js'}
+{js href='__JS__/sha256.js'}
+<script>
+    $("#register").click(function () {
+        const user_name = $("#name").val();
+        const pwd = $("#pwd").val();
+        const repeat_pwd = $("#repeat-pwd").val();
+        const email_data = $("#email").val();
+        const phone_number = $("#number").val();
+
+        if(pwd!==repeat_pwd){
+            alert('两次密码不同')
+        }else{
+            $.post(
+                '/user/user/addUser',
+                    {
+                        "user_name": user_name,
+                        "password": hex_sha256(pwd),
+                        "email": email_data,
+                        "phone_number": phone_number
+                    },function (data, state) {
+                        alert(data['msg'])
+                        location.href = data['url']
+                }
+            )
+        }
+    })
+
+</script>
+</html>

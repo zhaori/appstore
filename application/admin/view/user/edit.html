@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{$title}</title>
+    {css href="__CSS__/bootstrap.min.css"}
+    <style>
+       .form-group{width: 300px;height: 60px;}
+       label{font-size: 20px;}
+    </style>
+</head>
+
+<body>
+    
+    <div style="position: relative;left: 20%;top: 20px;">
+        <div class="form-group">
+            <label>商品名称</label>
+            <input type="text" class="form-control" id='name' />
+        </div>
+
+        <div class="form-group">
+            <label>商品单价</label>
+            <input type="number" class="form-control" oninput="if(value<0)value=0" id="price" />
+        </div>
+
+        <div class="form-group">
+            <label>商品数量</label>
+            <input type="number" class="form-control" oninput="if(value<0)value=0" id="num" />
+        </div>
+        
+        <div class="form-group">
+            <label>商品分类</label>                   
+            <select class="form-control" style="width: 200px;height: 40px;" id="classify_list">
+                <option disabled="disabled" selected>---下拉选择商品分类---</option>
+                {foreach $classify as $key=>$value}
+                    <option value={$value.classify_name}>{$value.classify_name}</option>
+                {/foreach}
+            </select>                   
+        </div>
+    </div>
+        
+    
+
+</body>
+{js href="__JS__/jquery-3.6.0.min.js"}
+<script>
+    
+</script>
+
+</html>

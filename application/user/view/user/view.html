@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{$title}</title>
+	{css href="__CSS__/bootstrap.min.css"}
+<style>
+	.view-info-logo{position: relative;left: 18%;top: 50px}
+	.view-info-text{text-align: center}
+	p{text-align: left;font-size: 18px}
+	.bs-example{margin: 20px;}
+</style>
+
+</head>
+<body style="padding-top: 30px;background-color: #FAFAFA">
+<br>
+
+<h1 style="text-align: center;position: relative;top: -30px">{$title}</h1>
+<div hidden="hidden" id="login_user">{$user}</div>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-8" style="border: 1px solid red;width: 40%;height: 400px">
+			<img src="/static/images/Logo.png" width="250" height="250" alt="Chrome浏览器" class="view-info-logo" />
+		</div>
+		<div class="col-md-4" style="width: 60%;height: 400px">
+			<h1 class="view-info-text" id="get_name" style="position: relative;top:-20px">{$name}</h1>
+			<div style="width: 100%;height: 60px;background-color: aliceblue">
+				<div style="width: 80%;height: 50px;position: relative;top:5px">
+					<span style="font-size: 26px;">价格</span>
+					<span style="font-size: 32px;color: red;position: relative;left: 10%" id="price" data-price={$unit_price}>
+						<img src="/static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb">
+					{$unit_price}</span>
+				</div>
+			</div>
+			<div style="width: 100%;height: 60px;background-color: aliceblue;position: relative;top: 30px">
+				<div style="width: 80%;height: 50px;position: relative;top:5px">
+					<label for="num">
+						<span style="font-size: 26px;">数量</span>
+					</label>
+					<input type="number" style="position: relative;left: 10%" id="num" min="1" max={$reserve} />
+					<span style="font-size: 16px;position: relative;left: 70px" id="data_num" data-num={$reserve}>库存({$reserve})</span>
+				</div>
+			</div>
+			<div style="width: 100%;height: 60px;background-color: aliceblue;position: relative;top: 60px">
+				<div style="width: 80%;height: 50px;position: relative;top:5px">
+						<div class="btn-group bs-example">
+							<label class="btn btn-default">
+								<input type="radio" name="receive" value="email"> <span class="glyphicon glyphicon-envelope">电子邮箱</span>
+							</label>
+							<label class="btn btn-default">
+								<input type="radio" name="receive" value="down"> <span class="glyphicon glyphicon-cloud-download">下载到本地</span>
+							</label>
+						</div>
+				<span>（默认在我的订单里可看见）</span>
+				</div>
+			</div>
+			<div style="border: 1px solid red;width: 100%;height: 60px;background-color: aliceblue">
+				<div style="width: 80%;height: 50px;position: relative;top:90px">
+					<button class="btn btn-success btn-lg" id="add">加入购物车</button>
+					<button class="btn btn-primary btn-lg" id="buy" style="position: relative;left: 10%">立即购买</button>
+					<button class="btn btn-success btn-lg" id="show" style="position: relative;left: 20%">查看我的购物车</button>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-10" style="border: 1px solid red;width: 100%;height: auto">
+			<div style="text-align: center">
+				<h1>商品简介</h1><br>
+				<p>{$synopsis}</p>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+{js href="__JS__/jquery-3.6.0.min.js"}
+{js href="__JS__/bootstrap.min.js"}
+{js href='__JS__/jquery.cookie.min.js'}
+<script>
+	$("#add").click(function () {
+		var receive_means = $("input[name='receive']:checked").val();
+		var get_name = $("#get_name").text();
+		var buy_num = $("#num").val();			//购买数量
+		var total_num = $("#data_num").data("num");
+		var price = $("#price").data("price")  //单价
+		var get_user = $("#login_user").text(); //用户名
+		// alert(receive_means)
+		if(buy_num>total_num){
+			alert("购买超出库存")
+		}else {
+			$.post("/user/detail/submitCart",{
+				"user_name": get_user,
+				"name": get_name,
+				"buy_num": buy_num,
+				"buy_price": price,
+				"total_price": buy_num*price,
+				"get_goods": receive_means
+			}, function (data, state) {
+				if(data["error_info"]){
+					alert(data["error_info"])
+				}else {
+					$.post("/user/detail/shoppCart",{"cartID": data})
+					alert("已加入购物车")
+				}
+			})
+		}
+	})
+
+	$("#show").click(function () {
+		location.href="/user/detail/shoppCart?user_name="+$("#login_user").text()+'&&token='+$.cookie('session_id')
+	})
+</script>
+</html>

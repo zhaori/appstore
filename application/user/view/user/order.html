@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {css href="__CSS__/bootstrap.min.css"}
+    {css href="__CSS__/bootstrap-table.min.css"}
+    <title>{$title}</title>
+    <style>
+        .table th{font-size: 18px;text-align: center;}
+        .table td{font-size: 18px;text-align: center;}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h1 style="text-align: center;">提交购物订单</h1>
+            <h4 style="text-align: center;">30分钟未支付将自动关闭并删除订单</h4><br>
+            <p hidden id="user_name">{$user_name}</p>
+            <div class="col-md-10" style="border: 1px solid red;width: 100%;height: 600px;">
+                <div class="bootstrap-table">
+                    <div class="fixed-table-toolbar">
+                        <button id="remove" class="btn btn-danger" style="position: relative;top: 10px;">
+                            <i class="glyphicon glyphicon-remove"></i> 删除
+                        </button>
+                        <button id="select_all" class="btn btn-info" style="position:relative;top: 10px">
+                            <i class="glyphicon glyphicon-btc"></i> 全选
+                        </button>
+                        <button id="select_del" class="btn btn-default" style="position:relative;top: 10px">
+                            <i class="glyphicon glyphicon-btc"></i> 反选
+                        </button>
+                        <div class="columns columns-right btn-group pull-right">
+                            <button class="btn btn-default"
+                                type="button" aria-label="pagination search"
+                                title="搜索">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                            <button class="btn btn-default" type="button" aria-label="refresh"
+                                title="刷新">
+                                <i class="glyphicon glyphicon-refresh icon-refresh"></i>
+                            </button>
+                        </div>
+                        <div class="pull-right search"><input class="form-control" type="text" placeholder="Search">
+                        </div>
+                    </div>
+                    <table class="table" data-toggle="table" id="data_table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>名称</th>
+                                <th>单价</th>
+                                <th>数量</th>
+                                <th>总价</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $data as $key=>$value}
+                            <tr class="tr_tr">
+                                <td><input type="checkbox" class="check-select" name="select"></td>
+                                <td class="goods_name">{$value["goods_name"]}</td>
+                                <td class="price">{$value["unit_price"]}</td>
+                                <td class="quantity">{$value["quantity"]}</td>
+                                <td class="num">{$value["total"]}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                <nav aria-label="Page navigation" style="position: absolute;left: 32%;top: 580px;">
+					<ul class="pagination pagination-lg">
+						<li>
+							<a href="#" aria-label="Previous">
+								<span aria-hidden="true">&laquo;</span>
+							</a>
+						</li>
+						<li><a href="#">1</a></li>
+						<li><a href="#">2</a></li>
+						<li><a href="#">3</a></li>
+						<li><a href="#">4</a></li>
+						<li><a href="#">共XXX页</a></li>
+						<li>
+							<a href="#" aria-label="Next">
+								<span aria-hidden="true">&raquo;</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+            </div>
+            <button class="btn-group" style="width: 100px;height: 40px;float: left" id="buy">立即支付</button>
+<!--            <div style="border: 1px solid black;width: 100px;height: 40px;float: right">-->
+<!--                <span style="position:relative;top: 10px">总计：</span>-->
+<!--                <span style="font-size: 18px;color: #5bc0de;position: relative;top: 10px" id="order_num">{$total}</span>-->
+<!--            </div>-->
+        </div>
+    </div>
+</body>
+{js href="__JS__/jquery-3.6.0.min.js"}
+{js href="__JS__/bootstrap.min.js"}
+{js href="__JS__/bootstrap-table.min.js"}
+{js href="__JS__/bootstrap-table-zh-CN.min.js"}
+
+<script>
+    $("#select_all").click(function () {
+        let input_select = $("input[name='select']")
+        input_select.prop("checked", true);
+    })
+    $("#select_del").click(function () {
+        let input_select = $("input[name='select']")
+        input_select.prop("checked", false);
+    })
+
+    $("#remove").click(function () {
+        $("input[type='checkbox']:checked").each(function () {
+            //遍历所有被选中的表行
+            let n = $(this).parents("tr").index();
+            n = n+1         //数组索引是从0开始
+            $("table#data_table").find("tr:eq("+n+")").remove()
+        })
+    })
+
+    $("#buy").click(function () {
+        let buy_order = [];
+        const the_table = $("table#data_table");
+        // alert($("#order_num").text())
+        $("input[type='checkbox']:checked").each(function () {
+            //遍历所有被选中的表行
+            let n = $(this).parents("tr").index();
+            n = n+1         //数组索引是从0开始
+            let goods_name = the_table.find("tr:eq("+n+")").find(".goods_name").text()
+            let price = the_table.find("tr:eq("+n+")").find(".price").text()
+            let quantity = the_table.find("tr:eq("+n+")").find(".quantity").text()
+
+            buy_order.push({"goods_name":goods_name,"price":price, "quantity":quantity})
+
+        })
+        $.post("/user/order/test", {"order":buy_order,"user_name":$("#user_name").text()})
+    })
+</script>
+</html>

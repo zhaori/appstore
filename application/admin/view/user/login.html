@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{$title}</title>
+	{css href='__CSS__/bootstrap.min.css'}
+	<style>
+		input.form-control{width: 300px;height: 45px;}
+		div.col-md-2{font-size: 18px;position: relative;top:10px;right: 30px}
+
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="form-group col-md-8" style="border: 1px solid red;position: relative;left: 21%;top: 100px">
+			<h1 style="text-align: center">登录</h1><br><br>
+			<div class="col-md-9" style="position: relative;left: 130px">
+				<div class="col-md-2">用户名</div>
+				<label class="form-group">
+					<input class="form-control" type="text">
+				</label><br><br>
+
+				<div class="col-md-2">密码</div>
+				<label class="form-group">
+					<input class="form-control" type="password">
+				</label><br><br>
+				<label class="form-group">
+					<button class="btn-lg btn-primary" style="position: relative;left: 200px">登录</button>
+				</label>
+			</div>
+		</div>
+
+	</div>
+</body>
+	{js href='__JS__/jquery-3.6.0.min.js'}
+	{js href='__JS__/sha256.js'}
+<script>
+
+</script>
+</html>

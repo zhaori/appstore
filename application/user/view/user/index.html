@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{$title}</title>
+	{css href="__CSS__/bootstrap.min.css"}
+	<style>
+		h1 {text-align: center;}
+		.buy-link {
+			border: 1px solid blue;
+			background-color: white;
+			width: 30%;
+			height: 330px
+		}
+
+		.buy-info-title {
+			font-size: 23px;
+			position: relative;
+			left: 27%;
+			top: 20px
+		}
+
+		.buy-info-logo {
+			position: relative;
+			left: 8%;
+			top: -20px;
+			cursor: pointer;
+		}
+
+		.buy-info-text {
+			font-size: 18px;
+			position: relative;
+			top: -50px
+		}
+
+		.buy-info-rmb {
+			position: relative;
+			top: -50px
+		}
+
+		.buy-info-rmb-price {
+			font-size: 20px;
+			color: red;
+			position: relative;
+			top: -48px
+		}
+	</style>
+</head>
+
+<body style="padding-top: 70px;background-color: #FAFAFA">
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#"><span style="font-size: 26px">Windows AppStore</span></a>
+			</div>
+			<div class="collapse navbar-collapse" id="topFixedNavbar1">
+				<ul class="nav navbar-nav" style="font-size: 20px">
+					<li class="active"><a href="#">首页<span class="sr-only">(current)</span></a></li>
+					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+							aria-haspopup="true" aria-expanded="false">全部分类<span class="caret"></span></a>
+						<ul class="dropdown-menu" style="font-size: 18px">
+							<li><a href="#">办公效率</a></li>
+							<li><a href="#">系统工具</a></li>
+							<li><a href="#">开发工具</a></li>
+							<li><a href="#">图片视频</a></li>
+							<li><a href="#">网络相关</a></li>
+
+						</ul>
+					</li>
+				</ul>
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="搜索商品分类或名称">
+					</div>
+					<button type="submit" class="btn btn-primary">搜索</button>
+				</form>
+				<div hidden="hidden" id="login_user">{$user}</div>
+				<ul class="nav navbar-nav navbar-right" style="font-size: 20px">
+					<li class="login_li"><a href="javascript:" id="login"><span class="glyphicon glyphicon-log-in">登陆</span></a></li>
+					<li class="login_li"><a href="javascript:" id="register"><span class="glyphicon glyphicon-log-out">注册</span></a></li>
+					<li><a href="javascript:"><span id="user" class="glyphicon glyphicon-user" data-name={$user}>{$user}</span></a></li>
+					<li><a href="javascript:" id="shopping-cart"><span class="glyphicon glyphicon-shopping-cart">购物车</span></a></li>
+				</ul>
+			</div>
+		</div>
+
+	</nav>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>每日推荐</h1><br>
+				<div style="background-color:#DFDFDF;  width: 100%;height: 330px">
+					<div class="col-md-4 buy-link">
+						<span class="buy-info-title">Chrome浏览器</span>
+						<img src="../static/images/Logo.png" width="250" height="250" alt="Chrome浏览器"
+							class="buy-info-logo" data-id='9'>
+						<!--					软件说明最大37个字符-->
+						<p class="buy-info-text">由Google开发的一款设计简单、高效的Web浏览工具</p>
+						<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
+							class="buy-info-rmb-price">1</span>
+					</div>
+					<div class="col-md-4 buy-link" style="position: relative;left: 5%">
+						<span class="buy-info-title">Edge浏览器</span>
+						<img src="../static/images/Edge.png" width="250" height="250" alt="edge浏览器"
+							class="buy-info-logo" data-id='8'>
+						<p class="buy-info-text">由微软开发的基于Chromium开源项目及其他开源软件的网页浏览器</p>
+						<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
+							class="buy-info-rmb-price">12</span>
+					</div>
+					<div class="col-md-4 buy-link" style="position: relative;left: 10%">
+						<span class="buy-info-title">Firefox浏览器</span>
+						<img src="../static/images/Firefox.png" width="250" height="250" alt="Firefox浏览器"
+							class="buy-info-logo" data-id='7'>
+						<p class="buy-info-text">由Mozilla开发的自由及开放源代码的网页浏览器</p>
+						<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
+							class="buy-info-rmb-price">12</span>
+					</div>
+				</div>
+
+			</div>
+			<div class="col-md-12">
+				<h1 style="margin-top:50px">精品推荐</h1>
+			</div>
+		</div>
+	</div>
+
+</body>
+{js href="__JS__/jquery-3.6.0.min.js"}
+{js href="__JS__/bootstrap.min.js"}
+{js href='__JS__/jquery.cookie.min.js'}
+<script>
+	$("#login").click(function () {
+		location.href = "/user/user/login"
+	})
+
+	$("#register").click(function () {
+		location.href = "/user/user/register"
+	})
+
+	$(".buy-info-logo").click(function () {
+		var buy_id = $(this).data('id');
+		var get_user = $("#user").data('name');
+		location.href = "/user/detail?id="+buy_id+"&&user_name="+get_user+'&&token='+$.cookie('session_id');
+	})
+
+	$("#shopping-cart").click(function () {
+		var get_user = $("#user").data('name');
+		location.href="/user/Detail/shoppCart?user_name="+get_user+'&&token='+$.cookie('session_id')
+	})
+</script>
+
+</html>
