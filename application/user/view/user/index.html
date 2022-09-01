@@ -142,13 +142,11 @@
 
 	$(".buy-info-logo").click(function () {
 		var buy_id = $(this).data('id');
-		var get_user = $("#user").data('name');
-		location.href = "/user/detail?id="+buy_id+"&&user_name="+get_user+'&&token='+$.cookie('session_id');
+		location.href = "/user/detail?id=" + buy_id + "&&user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token');
 	})
 
 	$("#shopping-cart").click(function () {
-		var get_user = $("#user").data('name');
-		location.href="/user/Detail/shoppCart?user_name="+get_user+'&&token='+$.cookie('session_id')
+        location.href = "/user/Detail/shoppCart?user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token')
 	})
 </script>
 

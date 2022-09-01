@@ -4,6 +4,7 @@ namespace app\common;
 
 class Hash
 {
+    //计算、验证哈希值
     private $salt;
 
     public function __construct()

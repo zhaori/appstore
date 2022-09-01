@@ -30,6 +30,8 @@ class User extends Controller
                 $this->user = Session::get('user_name');
             } elseif (password_verify(Session::get('user_name'), base64_decode(request()->param('token')))) {
                 $this->user = Session::get('user_name');
+            } else {
+                $this->user = null;
             }
         }
         return $this->fetch("index", [
@@ -101,11 +103,11 @@ class User extends Controller
                 if ($login_state) {
                     //login_state为true，即代表永久存储，但事实上设置一个月有效期
                     Session::set('state', true, 'think');
-                    Cookie::set('user_name', $user, 86400 * 30);
+                    Cookie::set('user_name', base64_encode(md5($user)), 86400 * 30);
                     Cookie::set('token', $uuid, 86400 * 30);
                 } else {
                     Session::set('state', false, 'think');
-                    Cookie::set('user_name', $user, 86400);
+                    Cookie::set('user_name', base64_encode(md5($user)), 86400);
                     Cookie::set('token', $uuid, 86400);
                 }
                 $this->success(true, '/user/user', $uuid);

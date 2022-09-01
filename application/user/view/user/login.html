@@ -60,7 +60,7 @@
 		$.post("/user/user/verifyLogin", {'user_name': user_name, 'password': pwd, 'check_state': ischeck},
 				function (data, state) {
 					if (data['msg'] === true) {
-						location.href = '/user/user?token=' + data['data'];
+						location.href = '/user/user?user_name=' + $.cookie("user_name") + '&&token=' + data['data'];
 					}
 				}
 		)

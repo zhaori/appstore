@@ -7,10 +7,10 @@ use think\Controller;
 use think\Db;
 use think\Exception;
 use think\exception\DbException;
+use think\facade\Session;
 
 class Detail extends Controller
 {
-    public string $get_user;
     public bool $login_verify;
 
     public function __construct(App $app = null)
@@ -23,7 +23,6 @@ class Detail extends Controller
     public function index()
     {
         $get_id = $this->request->param("id");
-        $this->get_user = $this->request->get("user_name");
         $get_comm = Db::name('commodity')->where('comm_id', (int)$get_id)->select();
 
         try {
@@ -37,7 +36,6 @@ class Detail extends Controller
 
         return $this->fetch('user/view',[
             "title"         => "商品详情",
-            "user"          => $this->get_user,
             "name"          => $get_data["comm_name"],
             "classify"      => $class_name,
             "unit_price"    => $get_data["comm_quantity"],
@@ -50,8 +48,9 @@ class Detail extends Controller
     public function submitCart()
     {
         $data = $this->request->post();
+        $user = Session::get("user_name");
         if ($this->login_verify) {
-            $user_id = Db::name('user')->where('user_name', (string)$this->request->param('user_name'))->value("user_id");
+            $user_id = Db::name('user')->where('user_name', $user)->value("user_id");
             try {
                 $select_cart_data = Db::name("shopcart")->where("user_id", (int)$user_id)->select();
             } catch (DbException $e) {
@@ -80,11 +79,7 @@ class Detail extends Controller
     }
 
     public function shoppCart(){
-        $user_name = $this->request->param("user_name");
-        $login_info = request()->param('token');
-        if (!isset($login_info) || !isset($user_name)) {
-            $this->error('登录信息不存在', '/user/user/login');
-        }
+        $user_name = Session::get('user_name');
         if ($this->login_verify) {
             try {
                 $get_user = Db::name('user')->where("user_name", $user_name)->select()[0];
