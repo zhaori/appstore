@@ -52,7 +52,6 @@
 </div>
 </body>
 {js href='__JS__/jquery-3.6.0.min.js'}
-{js href='__JS__/sha256.js'}
 <script>
     $("#register").click(function () {
         const user_name = $("#name").val();
@@ -61,17 +60,25 @@
         const email_data = $("#email").val();
         const phone_number = $("#number").val();
 
-        if(pwd!==repeat_pwd){
+        if (email_data === '') {
+            alert('请输入邮箱')
+        }
+
+        if (phone_number === '') {
+            alert('请输入电话号码')
+        }
+
+        if (pwd !== repeat_pwd) {
             alert('两次密码不同')
-        }else{
+        } else {
             $.post(
                 '/user/user/addUser',
-                    {
-                        "user_name": user_name,
-                        "password": hex_sha256(pwd),
-                        "email": email_data,
-                        "phone_number": phone_number
-                    },function (data, state) {
+                {
+                    "user_name": user_name,
+                    "password": pwd,
+                    "email": email_data,
+                    "phone_number": phone_number
+                },function (data, state) {
                         alert(data['msg'])
                         location.href = data['url']
                 }

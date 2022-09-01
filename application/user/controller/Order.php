@@ -4,12 +4,13 @@ namespace app\user\controller;
 
 use think\App;
 use think\cache\driver\Redis;
-use think\facade\Session;
-use think\validate;
 use think\Controller;
 use think\Db;
+use think\facade\Session;
+use think\validate;
 
-Class Order extends Controller{
+class Order extends Controller
+{
     protected $redis_options = [
         'host' => 's5.z100.vip',
         'port' => 39166,
@@ -43,7 +44,7 @@ Class Order extends Controller{
     public function index(){
         //提交订单支付
         $data = $this->request->post();
-        if ((new \app\user\common\LoginCheck)->check()) {
+        if ((new \app\common\LoginCheck)->check()) {
             $this->isJob($data);
         } else {
             $this->error("未登录,返回登录页", "/user/user/login");

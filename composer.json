@@ -19,11 +19,14 @@
         "php": ">=7.4",
         "topthink/framework": "5.1.*",
         "topthink/think-captcha": "2.0.*",
-      "ext-json": "*",
+        "ext-json": "*",
         "topthink/think-queue": "1.1.6",
-      "ext-redis": "*",
-      "ext-curl": "*",
-      "ext-mysqli": "*"
+        "ext-redis": "*",
+        "ext-curl": "*",
+        "ext-mysqli": "*",
+        "ext-openssl": "*",
+        "ext-libsodium": "*",
+        "ext-mcrypt": "*"
     },
     "autoload": {
         "psr-4": {

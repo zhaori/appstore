@@ -1,12 +1,12 @@
 <?php
 
 namespace app\user\controller;
+use app\common\LoginCheck;
 use think\App;
 use think\Controller;
 use think\Db;
 use think\Exception;
 use think\exception\DbException;
-use app\user\common\LoginCheck;
 
 class Detail extends Controller
 {

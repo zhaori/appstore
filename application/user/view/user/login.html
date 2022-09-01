@@ -49,7 +49,7 @@
 </script>
 <script>
 	$("#register").click(function () {
-		location.href='/user/user/register'
+		location.href = '/user/user/register';
 	})
 
 	$("#login").click(function () {
@@ -57,23 +57,13 @@
 		var pwd = $("#pwd").val();
 		var ischeck = $("#save_login_info").prop('checked')
 
-		$.post("/user/user/verifyLogin", {'user_name':user_name, 'password':hex_sha256(pwd)},
-			function (data, state) {
-				if(data['state']===true){
-					$.cookie("session_id", data["session_id"],{expires: 30, path: '/'})
-					$.cookie("user_name",data['user_name'],{expires: 30, path: '/'})
-				}else {
-					$.cookie("session_id",data["session_id"],{expires: 1, path: '/'})
-					$.cookie("user_name", data['user_name'],{expires: 1, path: '/'})
+		$.post("/user/user/verifyLogin", {'user_name': user_name, 'password': pwd, 'check_state': ischeck},
+				function (data, state) {
+					if (data['msg'] === true) {
+						location.href = '/user/user?token=' + data['data'];
+					}
 				}
-				location.href='/user/user?token='+data["session_id"];
-			}
-		)})
-				// function (data,state) {
-				// 	if(data["info"]===true){
-				// 		location.href='/user/user?user='+data["user"];
-				// 	}
-				// })
-	// })
+		)
+	})
 </script>
 </html>

@@ -2,6 +2,9 @@
 
 namespace app\user\controller;
 
+use app\common\Hash;
+use app\common\LoginCheck;
+use think\App;
 use think\Controller;
 use think\Db;
 use think\Exception;
@@ -10,18 +13,31 @@ use think\facade\Session;
 
 class User extends Controller
 {
+    private $hash;
+    private $user;
+
+    public function __construct(App $app = null)
+    {
+        parent::__construct($app);
+        $this->hash = new Hash();
+    }
+
     public function index()
     {
-        $login_info = request()->param('token');
-        if(isset($login_info) && Session::get("session_id")==$login_info || Cookie::get('session_id')){
-            return $this->fetch("index", [
-                "title"         => "正品软件代理商城",
-                "logo"          => '/static/store.ico',
-                "user"          => Cookie::get("user_name")
-            ]);
-        }else{
-            $this->error("用户不存在请重新登录", "/user/user/login");
+        $v = new LoginCheck();
+        if ($v->check()) {
+            if (password_verify(Session::get('user_name'), base64_decode(Cookie::get('token')))) {
+                $this->user = Session::get('user_name');
+            } elseif (password_verify(Session::get('user_name'), base64_decode(request()->param('token')))) {
+                $this->user = Session::get('user_name');
+            }
         }
+        return $this->fetch("index", [
+            "title" => "正品软件代理商城",
+            "logo" => '/static/store.ico',
+            "user" => $this->user
+
+        ]);
     }
 
     public function login()
@@ -36,9 +52,9 @@ class User extends Controller
 
     public function addUser()
     {
-        $user = request()->post('user_name');
+        $user = trim(request()->post('user_name'));
         $pwd = request()->post('password');
-        $email = request()->post('email');
+        $email = trim(request()->post('email'));
         $phone_number = request()->post('phone_number');
 
         $validate_data = [
@@ -47,7 +63,7 @@ class User extends Controller
             'phone_number' => $phone_number
         ];
 
-        $validate = $this->validate($validate_data, '\app\user\common\validate\info');
+        $validate = $this->validate($validate_data, '\app\common\validate\info');
         if ($validate !== true) {
             $this->error($validate);
         }
@@ -56,10 +72,16 @@ class User extends Controller
             $this->error('不允许创建存在相同用户名');
         }
 
+        $hash_data = $this->hash->compute($pwd);
         try {
-            $get_id = Db::name('user')->insertGetId(['user_name' => $user, 'email' => $email, 'phone_number' => $phone_number]);
-            Db::name('password')->insert(['user_id' => $get_id, 'password' => $pwd]);
-            $this->success('注册成功，自动返回登录界面', 'user/user/login');
+            Db::name('user')->insert([
+                'user_name' => $user,
+                'email' => $email,
+                'phone_number' => $phone_number,
+                'passwd' => $hash_data['passwd'],
+                'salt' => $hash_data['salt']
+            ]);
+            $this->success('注册成功，自动返回登录界面', '/user/user/login');
         } catch (Exception $e) {
             $this->error($e);
         }
@@ -67,38 +89,37 @@ class User extends Controller
 
     public function verifyLogin()
     {
-        $user = request()->post('user_name');
-        trim($user);
+        $user = trim(request()->post('user_name'));
         $pwd = request()->post('password');
-        $user_id = Db::name('user')->where('user_name', $user)->value('user_id');
         $login_state = request()->post("check_state");
-
-        if (!is_null($user_id)) {
-            $search_pwd = Db::name('password')->where('user_id', $user_id)->value('password');
-            if ($pwd == $search_pwd) {
-                Session::set('name', $user, 'think');
-                Session::set('session_id', session_id(), 'think');
-                if($login_state){
+        if (isset($user)) {
+            $search_pwd = Db::name('user')->where('user_name', $user)->find();
+            if ($this->hash->verify($search_pwd['passwd'], $pwd, $search_pwd['salt'])) {
+                $uuid = base64_encode(password_hash($user, PASSWORD_BCRYPT));
+                Session::set('user_name', $user, 'think');
+                Session::set('token', $uuid, 'think');
+                if ($login_state) {
                     //login_state为true，即代表永久存储，但事实上设置一个月有效期
                     Session::set('state', true, 'think');
-                    return ["state"=>"true", "session_id" =>session_id(), "user_name"=>hash('md5',$user),"expire"=>86400*30];
-                }else{
+                    Cookie::set('user_name', $user, 86400 * 30);
+                    Cookie::set('token', $uuid, 86400 * 30);
+                } else {
                     Session::set('state', false, 'think');
-                    return ["state"=>false, "session_id" =>session_id(),'user_name'=>$user];
+                    Cookie::set('user_name', $user, 86400);
+                    Cookie::set('token', $uuid, 86400);
                 }
+                $this->success(true, '/user/user', $uuid);
             }else {
-               $this->error("密码错误");
+                $this->error("密码错误");
             }
-        }else{
-            $this->error('用户不存在');
         }
+        return 0;
     }
+
 
     public function test()
     {
-        echo hash('md5',Cookie::get('user_name'));
-        var_dump(Cookie::get("session_id"));
-//        $this->success('注册成功，自动返回登录界面', 'user/user/login');
+
     }
 
 }
