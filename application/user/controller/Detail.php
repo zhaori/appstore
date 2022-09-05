@@ -37,6 +37,7 @@ class Detail extends Controller
         return $this->fetch('user/view',[
             "title"         => "商品详情",
             "name"          => $get_data["comm_name"],
+            "goods_id"      => $get_data["comm_id"],
             "classify"      => $class_name,
             "unit_price"    => $get_data["comm_quantity"],
             "synopsis"      => $get_data["column_synopsis"],
@@ -47,7 +48,7 @@ class Detail extends Controller
 
     public function submitCart()
     {
-        $data = $this->request->post();
+        $data = request()->post();
         $user = Session::get("user_name");
         if ($this->login_verify) {
             $user_id = Db::name('user')->where('user_name', $user)->value("user_id");
@@ -56,26 +57,35 @@ class Detail extends Controller
             } catch (DbException $e) {
                 $this->error($e);
             }
-            // 判断同一个用户是否重复添加购物车
+//          判断同一个用户是否重复添加购物车
             $select_cart_data_size = count($select_cart_data);
-            for ($a = 0; $a < $select_cart_data_size; $a++) {
-                array_shift($select_cart_data[$a]);
-                if ($user_id == $select_cart_data[$a]["user_id"]) {
-                    if(!empty(array_diff_assoc($data, $select_cart_data[$a]))){
+            if($select_cart_data_size > 0){
+                foreach ($select_cart_data as $key=>$value){
+                    if($data["name"]==$value["goods_name"]){
                         return ["error_info"=>"重复添加到购物车"];
+                    }else{
+                        return Db::name("shopcart")->insertGetId([
+                            "user_id"       => $user_id,
+                            "goods_name"    => $data["name"],
+                            "quantity"      => $data["buy_num"],
+                            "unit_price"    => $data["buy_price"],
+                            "total"         => $data["total_price"]
+                        ]);
                     }
                 }
+            }elseif($select_cart_data_size == 0 || is_null($select_cart_data_size)){
+                return Db::name("shopcart")->insertGetId([
+                    "user_id"       => $user_id,
+                    "goods_name"    => $data["name"],
+                    "quantity"      => $data["buy_num"],
+                    "unit_price"    => $data["buy_price"],
+                    "total"         => $data["total_price"]
+                ]);
             }
-            return Db::name("shopcart")->insertGetId([
-                "user_id"       => $user_id,
-                "goods_name"    => $data["name"],
-                "quantity"      => $data["buy_num"],
-                "unit_price"    => $data["buy_price"],
-                "total"         => $data["total_price"]
-            ]);
         }else{
             $this->error('未提交信息，错误页面', "/user/Detail");
         }
+        return 1;
     }
 
     public function shoppCart(){
@@ -95,7 +105,6 @@ class Detail extends Controller
         }else{
             $this->error("未登录,返回登录页", "/user/user/login");
         }
-
     }
 
     public function test(){

@@ -25,7 +25,7 @@
 			<img src="/static/images/Logo.png" width="250" height="250" alt="Chrome浏览器" class="view-info-logo" />
 		</div>
 		<div class="col-md-4" style="width: 60%;height: 400px">
-			<h1 class="view-info-text" id="get_name" style="position: relative;top:-20px">{$name}</h1>
+			<h1 class="view-info-text" id="get_name" style="position: relative;top:-20px" data-id="{$goods_id}">{$name}</h1>
 			<div style="width: 100%;height: 60px;background-color: aliceblue">
 				<div style="width: 80%;height: 50px;position: relative;top:5px">
 					<span style="font-size: 26px;">价格</span>
@@ -39,7 +39,7 @@
 					<label for="num">
 						<span style="font-size: 26px;">数量</span>
 					</label>
-					<input type="number" style="position: relative;left: 10%" id="num" min="1" max={$reserve} />
+					<input type="number" style="position: relative;left: 10%" id="num" min="1" max={$reserve} onblur="disabled_btn()"/>
 					<span style="font-size: 16px;position: relative;left: 70px" id="data_num" data-num={$reserve}>库存({$reserve})</span>
 				</div>
 			</div>
@@ -58,9 +58,9 @@
 			</div>
 			<div style="border: 1px solid red;width: 100%;height: 60px;background-color: aliceblue">
 				<div style="width: 80%;height: 50px;position: relative;top:90px">
-					<button class="btn btn-success btn-lg" id="add">加入购物车</button>
-					<button class="btn btn-primary btn-lg" id="buy" style="position: relative;left: 10%">立即购买</button>
-					<button class="btn btn-success btn-lg" id="show" style="position: relative;left: 20%">查看我的购物车</button>
+					<button type="button" class="btn btn-success btn-lg" id="add">加入购物车</button>
+					<button type="button" class="btn btn-primary btn-lg" id="buy" style="position: relative;left: 10%">立即购买</button>
+					<button type="button" class="btn btn-success btn-lg" id="show" style="position: relative;left: 20%">查看我的购物车</button>
 				</div>
 			</div>
 		</div>
@@ -77,56 +77,60 @@
 {js href="__JS__/bootstrap.min.js"}
 {js href='__JS__/jquery.cookie.min.js'}
 <script>
+	function disabled_btn() {
+		// 当购买数值小于库存时禁用提交按钮
+		var buy_num = $("#num").val();			//购买数量
+		var total_num = $("#data_num").data("num");
+		if (buy_num > total_num || buy_num==null || buy_num==='') {
+			$("#buy").attr({"disabled":"disabled"});
+			$("#add").attr({"disabled":"disabled"});
+		}else {
+			$("#buy").removeAttr("disabled");
+			$("#add").removeAttr("disabled");
+		}
+	}
+
+</script>
+<script>
 	$("#add").click(function () {
 		var receive_means = $("input[name='receive']:checked").val();
 		var get_name = $("#get_name").text();
 		var buy_num = $("#num").val();			//购买数量
 		var total_num = $("#data_num").data("num");
 		var price = $("#price").data("price")  //单价
-		// var get_user = $("#login_user").text(); //用户名
-		// alert(receive_means)
-		if(buy_num>total_num){
-			alert("购买超出库存")
-		}else {
-			$.post("/user/detail/submitCart",{
-				// "user_name": get_user,
-				"name": get_name,
-				"buy_num": buy_num,
-				"buy_price": price,
-				"total_price": buy_num*price,
-				"get_goods": receive_means
-			}, function (data, state) {
-				if (data["error_info"]) {
-					alert(data["error_info"])
-				} else {
-					$.post("/user/detail/shoppCart", {"cartID": data})
-					alert("已加入购物车")
-				}
-			})
-		}
+		$.post("/user/detail/submitCart",{
+			"name": get_name,
+			"buy_num": buy_num,
+			"buy_price": price,
+			"total_price": buy_num*price,
+			"get_goods": receive_means
+		}, function (data, state) {
+			if (data["error_info"]) {
+				alert(data["error_info"])
+			} else {
+				// $.post("/user/detail/shoppCart", {"cartID": data})
+				alert("已加入购物车")
+			}
+		})
 	})
 
 	$("#buy").click(function () {
-		var get_name = $("#get_name").text();
+		// var get_name = $("#get_name").text();
+		var buy_id = $("#get_name").data('id');
 		var buy_num = $("#num").val();			//购买数量
-		var total_num = $("#data_num").data("num");
+		// var total_num = $("#data_num").data("num");
 		var price = $("#price").data("price")  //单价
-		var get_user = $("#login_user").text(); //用户名
-		if (buy_num > total_num) {
-			alert("购买超出库存")
-		} else {
-			$.post("/user/order", {
-				"name": get_name,
+		$.post("/user/order", {
+			"buy":{
+				// "name": get_name,
+				"buy_id": buy_id,
 				"buy_num": buy_num,
 				"buy_price": price,
-				"total_price": buy_num * price,
-				"user_name": get_user,
-				"token": $.cookie('session_id')
-			}, function (data, state) {
-				console.log(data)
-			})
-		}
-
+				"total_price": buy_num * price
+			}
+		}, function (data, state) {
+			console.log(data)
+		})
 	})
 
 	$("#show").click(function () {

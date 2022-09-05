@@ -37,13 +37,13 @@
 						</thead>
 						<tbody>
 						{foreach $data as $key=>$value}
-							<tr>
+							<tr class="tag_del">
 								<td><input type="checkbox" name="select" value="{$value['cart_id']}"></td>
-								<td>{$value["goods_name"]}</td>
+								<td class="goods_name">{$value["goods_name"]}</td>
 								<td class="unit_price">{$value["unit_price"]}</td>
 								<td class="amount">{$value["quantity"]}</td>
 								<td class="num">{$value["total"]}</td>
-								<td><a href="javascript:">删除</a></td>
+								<td><a href="javascript:" class="del-btn" data-id="{$value['cart_id']}">删除</a></td>
 							</tr>
 						{/foreach}
 						</tbody>
@@ -138,10 +138,21 @@
 	$("#select_submit").click(function () {
 		var arr = [];
 		$("input[name='select']:checked").each(function () {
-			arr.push($(this).val())
+			arr.push($(this).val());
 		})
-		console.log(arr)
+		$.post("/user/order",{"data":arr})
+		// console.log(arr)
 	})
 
+
+	$(".del-btn").click(function () {
+		//删除按钮
+		let uid = $(this).data("id");
+		$(this).closest(".tag_del").remove();
+		// $.post("/script/delete.php", {
+		// 	"text_id": uid
+		// });
+		// location.reload();
+	})
 </script>
 </html>
