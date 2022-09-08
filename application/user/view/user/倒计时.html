@@ -6,28 +6,21 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script type= "text/javascript"  src= "../../../../public/static/bootstrap/js/jquery-3.6.0.min.js" ></script>
+    <link href="../../../../public/static/bootstrap/css/TimeCircles.css" rel="stylesheet">
+    <link href="../../../../public/static/bootstrap/css/readme.css" rel="stylesheet">
+    <script type="text/javascript" src="../../../../public/static/bootstrap/js/jquery-3.6.0.min.js"></script>
+    <script src="../../../../public/static/bootstrap/js/TimeCircles.js" type="text/javascript"></script>
 </head>
 <body>
-    <div id="showtime">
-
-    </div>
+<div class="example" data-timer="10"></div>
 </body>
   <script>
-      var showtime = function () {
-          var n = 0;
-          while (true){
-              n = n+1
-              if(n===30){
-                  break
-              }else {
-                  div.innerHTML = n
-              }
+      $(".example").TimeCircles({count_past_zero: false}).addListener(countdownComplete);
+
+      function countdownComplete(unit, value, total) {
+          if (total <= 0) {
+              $(this).fadeOut('slow').replaceWith("<h2>Time's Up!</h2>");
           }
       }
-      var div = document.getElementById("showtime");
-      setInterval (function () {
-          div.innerHTML = showtime();
-      }, 1000);  //反复执行函数本身
   </script>
 </html>

@@ -11,13 +11,17 @@ use think\facade\Session;
 
 class Detail extends Controller
 {
-    public bool $login_verify;
+    public $login_verify;
 
     public function __construct(App $app = null)
     {
         parent::__construct($app);
         $login = new LoginCheck();
         $this->login_verify = $login->check();
+        if (!$this->login_verify) {
+            $this->error('请登录后操作', '/user/user/login');
+        }
+
     }
 
     public function index()

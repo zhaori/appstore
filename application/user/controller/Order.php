@@ -2,14 +2,13 @@
 
 namespace app\user\controller;
 
-use app\common\LoginCheck;
 use Redis;
 use think\App;
-//use think\cache\driver\Redis;
 use think\Controller;
 use think\Db;
 use think\facade\Session;
-use think\validate;
+use app\common\LoginCheck;
+use app\common\ReserveCheck;
 
 class Order extends Controller
 {
@@ -23,34 +22,63 @@ class Order extends Controller
         $this->redis = new Redis();
         $this->redis->connect('s5.z100.vip', 39166);
         $this->redis->select(2);
+        if (!(new LoginCheck())->check()) {
+            $this->error('请登录后操作', '/user/user/login');
+        }
     }
 
     public function index()
     {
         //提交订单支付
         $data = request()->post('data');
-        if ((new LoginCheck)->check()) {
-            if(!empty($data)){
-                self::isJob($data);
-            }else{
-                $this->error('非法请求');
-            }
-        } else {
-            $this->error("未登录,返回登录页", "/user/user/login");
+        if (!empty($data)) {
+            self::isJob($data);
         }
+    }
+
+    public function buyorder()
+    {
+        $temp_id = request()->get('id');
+        $get_buy = Db::name('shopcart_temp')->where('temp_id', (int)$temp_id)->find();
+        if (!(new ReserveCheck())->check($get_buy['goods_name'], $get_buy['quantity'])) {
+            $this->error('异常的数据提交');
+        }
+
+        return $this->fetch("/user/buy", [
+            "title" => '订单',
+            'temp_id' => $temp_id,
+            'buy_name' => $get_buy['goods_name'],
+            'buy_num' => $get_buy['quantity'],
+            "buy_price" => $get_buy['unit_price'],
+            "total_price" => $get_buy['total']
+        ]);
+
     }
 
     public function buy()
     {
         //直接购买
-        $buy_data = request()->post("buy");
-//        if((new LoginCheck())->check() && !empty($buy_data)){
-//
-//        }
-        return $this->fetch("/user/buy",[
-            "title" => '订单'
-        ]);
+        $buy_name = request()->post('buy_name');
+        $buy_num = request()->post('buy_num');
+        $buy_price = request()->post('buy_price');
+        $total_price = request()->post('total_price');
+        $user_id = Db::name('user')->where('user_name', Session::get('user_name'))->value('user_id');
+        $repeat_data = Db::name('shopcart_temp')->where([
+            'user_id' => (int)$user_id,
+            'goods_name' => $buy_name
+        ])->find();
 
+        if (!empty($repeat_data)) {
+            return json(['state' => false, 'msg' => '不要重复提交']);
+        }
+        $buy_temp_id = Db::name('shopcart_temp')->insertGetId([
+            'user_id' => $user_id,
+            "goods_name" => $buy_name,
+            "quantity" => $buy_num,
+            "unit_price" => $buy_price,
+            "total" => $total_price
+        ]);
+        return json(['state' => true, 'msg' => $buy_temp_id]);
     }
 
     public function isJob($data)
@@ -60,6 +88,7 @@ class Order extends Controller
             //这里的$value就是与购物车表的cart_id
             $cart_data = Db::name("shopcart")->where("cart_id", (int)$value)->find();
             $total = Db::name('commodity')->where('comm_reserve', $cart_data["quantity"])->find();
+
             if($cart_data['quantity'] > $total["comm_reserve"]){
                 // 如果购买数量大于了库存，则存放至等待队列中,否则，进入处理队列
                 $this->redis->lPush('await_queue',$value);
@@ -125,15 +154,11 @@ class Order extends Controller
 //    }
 
 
-    public function test(){
-        $data = $this->request->post();
-        foreach ($data["data"] as $key=>$value){
-            var_dump($value);
-        }
-
-    }
-    public function test1(){
-       var_dump(config("order.port")) ;
+    public function test()
+    {
+//        $get_buy = Db::name('shopcart_temp')->where('temp_id', 21)->find();
+//        var_dump($get_buy);
+        var_dump(Db::name('commodity')->where('comm_name', "chrome浏览器")->value('comm_reserve'));
 
     }
 }

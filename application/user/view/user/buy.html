@@ -6,12 +6,55 @@
     {css href="__CSS__/bootstrap.min.css"}
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-          <div class="col-1">
-            <h2 style="position: relative;left: 36%">等待支付：30分钟未支付关闭订单</h2>
-          </div>
+<div class="container">
+    <div class="row">
+        <div class="col-1">
+            <h2 style="text-align: center">等待支付：30分钟未支付关闭订单</h2>
+            <br><br>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="shopping">
+                    <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>单价（元）</th>
+                        <th>数量</th>
+                        <th>小计（元）</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="tag_del">
+                        <td id="goods_name">{$buy_name}</td>
+                        <td id="unit_price">{$buy_price}</td>
+                        <td><input min="1" name="num" type="number" value="{$buy_num}"/></td>
+                        <td id="total">{$total_price}</td>
+                        <td><a data-id="{$temp_id}" href="javascript:"><span style="color: red">删除</span></a></td>
+                    </tr>
+                </table>
+            </div>
+
+
         </div>
     </div>
+</div>
 </body>
+{js href="__JS__/jquery-3.6.0.min.js"}
+{js href="__JS__/bootstrap.min.js"}
+{js href="__JS__/bootstrap-table.min.js"}
+<script>
+    $(".del-btn").click(function () {
+        let uid = $(this).data("id");
+        $(this).closest(".tag_del").remove();
+    })
+
+    $("input[name='num']").change(function () {
+        var num = $("input[name='num']").val();
+        var price = $("#unit_price").text();
+        // alert(total_price)
+        // alert(num+","+price)
+
+        document.getElementById('total').innerHTML = String(price * num)
+    })
+
+</script>
 </html>

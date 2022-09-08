@@ -95,10 +95,11 @@ class User extends Controller
         $pwd = request()->post('password');
         $login_state = request()->post("check_state");
         if (isset($user)) {
-            $search_pwd = Db::name('user')->where('user_name', $user)->find();
-            if ($this->hash->verify($search_pwd['passwd'], $pwd, $search_pwd['salt'])) {
+            $search_data = Db::name('user')->where('user_name', $user)->find();
+            if ($this->hash->verify($search_data['passwd'], $pwd, $search_data['salt'])) {
                 $uuid = base64_encode(password_hash($user, PASSWORD_BCRYPT));
                 Session::set('user_name', $user, 'think');
+                Session::get('user_id', $search_data['user_id']);
                 Session::set('token', $uuid, 'think');
                 if ($login_state) {
                     //login_state为true，即代表永久存储，但事实上设置一个月有效期

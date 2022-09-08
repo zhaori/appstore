@@ -61,16 +61,44 @@
 					<button type="button" class="btn btn-success btn-lg" id="add">加入购物车</button>
 					<button type="button" class="btn btn-primary btn-lg" id="buy" style="position: relative;left: 10%">立即购买</button>
 					<button type="button" class="btn btn-success btn-lg" id="show" style="position: relative;left: 20%">查看我的购物车</button>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-10" style="border: 1px solid red;width: 100%;height: auto">
-			<div style="text-align: center">
-				<h1>商品简介</h1><br>
-				<p>{$synopsis}</p>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10" style="border: 1px solid red;width: 100%;height: auto">
+            <div style="text-align: center">
+                <h1>商品简介</h1><br>
+                <p>{$synopsis}</p>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框（Modal） -->
+    <div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade" id="myModal" role="dialog"
+         tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        订单提交验证
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div style="position: relative;left: 30%">
+                        <h2 style="position: relative;left: 34%">等待支付：30分钟未支付关闭订单</h2>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">
+                        关闭订单
+                    </button>
+                    <button class="btn btn-primary" id="modal_submit" type="button">
+                        提交订单
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 </body>
 {js href="__JS__/jquery-3.6.0.min.js"}
@@ -98,13 +126,13 @@
 		var buy_num = $("#num").val();			//购买数量
 		var total_num = $("#data_num").data("num");
 		var price = $("#price").data("price")  //单价
-		$.post("/user/detail/submitCart",{
-			"name": get_name,
-			"buy_num": buy_num,
-			"buy_price": price,
-			"total_price": buy_num*price,
-			"get_goods": receive_means
-		}, function (data, state) {
+		$.post("/user/detail/submitCart", {
+            "buy_name": get_name,
+            "buy_num": buy_num,
+            "buy_price": price,
+            "total_price": buy_num * price,
+            "get_goods": receive_means
+        }, function (data, state) {
 			if (data["error_info"]) {
 				alert(data["error_info"])
 			} else {
@@ -115,26 +143,26 @@
 	})
 
 	$("#buy").click(function () {
-		// var get_name = $("#get_name").text();
-		var buy_id = $("#get_name").data('id');
-		var buy_num = $("#num").val();			//购买数量
-		// var total_num = $("#data_num").data("num");
-		var price = $("#price").data("price")  //单价
-		$.post("/user/order", {
-			"buy":{
-				// "name": get_name,
-				"buy_id": buy_id,
-				"buy_num": buy_num,
-				"buy_price": price,
-				"total_price": buy_num * price
-			}
-		}, function (data, state) {
-			console.log(data)
-		})
+        var get_name = $("#get_name").text();
+        // var buy_id = $("#get_name").data('id');
+        var buy_num = $("#num").val();			//购买数量
+        var price = $("#price").data("price")  //单价
+        $.post("/user/order/buy", {
+            "buy_name": get_name,
+            "buy_num": buy_num,
+            "buy_price": price,
+            "total_price": buy_num * price
+        }, function (data, state) {
+            if (data['state'] === false) {
+                alert(data['msg'])
+            } else {
+                location.href = "/user/order/buyorder?id=" + data['msg']
+            }
+        })
 	})
 
 	$("#show").click(function () {
-		location.href = "/user/detail/shoppCart?user_name=" + $("#login_user").text() + '&&token=' + $.cookie('session_id')
+        location.href = "/user/detail/shoppCart?user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token');
 	})
 </script>
 </html>
