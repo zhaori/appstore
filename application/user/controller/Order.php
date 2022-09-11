@@ -6,6 +6,7 @@ use Redis;
 use think\App;
 use think\Controller;
 use think\Db;
+use think\Exception;
 use think\facade\Session;
 use app\common\LoginCheck;
 use app\common\ReserveCheck;
@@ -36,13 +37,28 @@ class Order extends Controller
         }
     }
 
+    public function deleteTempOrder()
+    {
+        $temp_id = request()->post('temp_id');
+        $del_state = request()->post('time_state');
+        if (isset($del_state) && $del_state == true) {
+            try {
+                Db::name("tempcart")->where('temp_id', (int)$temp_id)->delete();
+            } catch (Exception $e) {
+                var_dump($e);
+            }
+        }
+        return ["state" => true, 'msg' => '删除成功'];
+    }
+
     public function buyorder()
     {
         $temp_id = request()->get('id');
-        $get_buy = Db::name('shopcart_temp')->where('temp_id', (int)$temp_id)->find();
+        $get_buy = Db::name('tempcart')->where('temp_id', (int)$temp_id)->find();
         if (!(new ReserveCheck())->check($get_buy['goods_name'], $get_buy['quantity'])) {
             $this->error('异常的数据提交');
         }
+        $begin_time = $get_buy['create_time'];
 
         return $this->fetch("/user/buy", [
             "title" => '订单',
@@ -50,7 +66,8 @@ class Order extends Controller
             'buy_name' => $get_buy['goods_name'],
             'buy_num' => $get_buy['quantity'],
             "buy_price" => $get_buy['unit_price'],
-            "total_price" => $get_buy['total']
+            "total_price" => $get_buy['total'],
+            "end_time" => date('Y-m-d H:i:s', strtotime("$begin_time + 30 minute"))
         ]);
 
     }
@@ -63,7 +80,7 @@ class Order extends Controller
         $buy_price = request()->post('buy_price');
         $total_price = request()->post('total_price');
         $user_id = Db::name('user')->where('user_name', Session::get('user_name'))->value('user_id');
-        $repeat_data = Db::name('shopcart_temp')->where([
+        $repeat_data = Db::name('tempcart')->where([
             'user_id' => (int)$user_id,
             'goods_name' => $buy_name
         ])->find();
@@ -71,7 +88,7 @@ class Order extends Controller
         if (!empty($repeat_data)) {
             return json(['state' => false, 'msg' => '不要重复提交']);
         }
-        $buy_temp_id = Db::name('shopcart_temp')->insertGetId([
+        $buy_temp_id = Db::name('tempcart')->insertGetId([
             'user_id' => $user_id,
             "goods_name" => $buy_name,
             "quantity" => $buy_num,
