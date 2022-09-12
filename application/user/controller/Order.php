@@ -37,13 +37,14 @@ class Order extends Controller
         }
     }
 
-    public function deleteTempOrder()
+    public function deleteTempOrder(): array
     {
         $temp_id = request()->post('temp_id');
         $del_state = request()->post('time_state');
-        if (isset($del_state) && $del_state == true) {
+        if (isset($del_state) && $del_state) {
             try {
                 Db::name("tempcart")->where('temp_id', (int)$temp_id)->delete();
+                $this->redis->lRem('task_queue', (int)$temp_id, 0);
             } catch (Exception $e) {
                 var_dump($e);
             }
@@ -56,18 +57,20 @@ class Order extends Controller
         $temp_id = request()->get('id');
         $get_buy = Db::name('tempcart')->where('temp_id', (int)$temp_id)->find();
         if (!(new ReserveCheck())->check($get_buy['goods_name'], $get_buy['quantity'])) {
-            $this->error('异常的数据提交');
+            $this->redis->rPush('await_queue', $get_buy['temp_id']);
+        }else{
+            $this->redis->rPush('task_queue', $get_buy['temp_id']);
         }
         $begin_time = $get_buy['create_time'];
 
         return $this->fetch("/user/buy", [
-            "title" => '订单',
-            'temp_id' => $temp_id,
-            'buy_name' => $get_buy['goods_name'],
-            'buy_num' => $get_buy['quantity'],
-            "buy_price" => $get_buy['unit_price'],
-            "total_price" => $get_buy['total'],
-            "end_time" => date('Y-m-d H:i:s', strtotime("$begin_time + 30 minute"))
+            "title"         => '订单',
+            'temp_id'       => $temp_id,
+            'buy_name'      => $get_buy['goods_name'],
+            'buy_num'       => $get_buy['quantity'],
+            "buy_price"     => $get_buy['unit_price'],
+            "total_price"   => $get_buy['total'],
+            "end_time"      => date('Y-m-d H:i:s', strtotime("$begin_time + 30 minute"))
         ]);
 
     }
@@ -108,33 +111,14 @@ class Order extends Controller
 
             if($cart_data['quantity'] > $total["comm_reserve"]){
                 // 如果购买数量大于了库存，则存放至等待队列中,否则，进入处理队列
-                $this->redis->lPush('await_queue',$value);
+                $this->redis->rPush('await_queue',$value);
             }elseif($cart_data['quantity'] <= $total["comm_reserve"]){
-                $this->redis->lpush("task_queue", $value);
+                $this->redis->rpush("task_queue", $value);
             }else{
                 $this->error('库存不足');
             }
         }
     }
-
-//    public function orderService($queue_data){
-//        if(count($queue_data) > 0 || !empty($queue_data)){
-//            $this->task_redis->lpush("task_queue", $queue_data);
-//        }
-//    }
-//
-//    public function awaitTask($queue_data){
-//        $await_redis = $this->await_redis->get("await_queue");
-//        //当redis缓存中存在值就纳入订单处理队列
-//        if(!is_null($await_redis)){
-//            $this->isJob($queue_data);
-//        }else{
-//            // 如果库存依然不足，就从队列头部删除，插入队列尾部
-//            $await_data = array_shift($this->await_array);
-//            $this->await_array[] = $await_data;
-//        }
-//    }
-
 
 //    public function isOrder($page=1){
 //        //购物车提交后，显示订单
@@ -173,9 +157,7 @@ class Order extends Controller
 
     public function test()
     {
-//        $get_buy = Db::name('shopcart_temp')->where('temp_id', 21)->find();
-//        var_dump($get_buy);
-        var_dump(Db::name('commodity')->where('comm_name', "chrome浏览器")->value('comm_reserve'));
+        $this->redis->lRem('task_queue', 34, 0);
 
     }
 }

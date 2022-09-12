@@ -16,7 +16,7 @@ class ReserveHandleService
         $queue_data = null;
         $await_queue = $this->redis->get("await_queue");
         if(!is_null($await_queue)){
-            $queue_data = $this->redis->Rpop("await_queue");
+            $queue_data = $this->redis->blpop("await_queue", 0);
         }
         return $queue_data;
     }
@@ -26,7 +26,7 @@ class ReserveHandleService
         $queue_data = null;
         $task_queue = $this->redis->get("task_queue");
         if(!is_null($task_queue)){
-            $queue_data = $this->redis->Rpop("task_queue");
+            $queue_data = $this->redis->blpop("task_queue", 0);
         }
         return $queue_data;
     }
