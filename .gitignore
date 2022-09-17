@@ -5,3 +5,6 @@
 thinkphp
 .env
 .DS_Store
+/.history
+/.settings
+/.dbeaver

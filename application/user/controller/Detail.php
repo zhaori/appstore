@@ -94,21 +94,18 @@ class Detail extends Controller
 
     public function shoppCart(){
         $user_name = Session::get('user_name');
-        if ($this->login_verify) {
-            try {
-                $get_user = Db::name('user')->where("user_name", $user_name)->select()[0];
-                $get_shopcart_data = Db::name('shopcart')->where("user_id", (int)$get_user["user_id"])->select();
-            } catch (DbException $e) {
-                $this->error($e);
-            }
-            return $this->fetch("user/shopcart", [
-                "title" => '购物车',
-                "data" => $get_shopcart_data,
-                "user_name" => $user_name
-            ]);
-        }else{
-            $this->error("未登录,返回登录页", "/user/user/login");
+        try {
+            $get_user = Db::name('user')->where("user_name", $user_name)->select()[0];
+            $get_shopcart_data = Db::name('shopcart')->where("user_id", (int)$get_user["user_id"])->select();
+        } catch (DbException $e) {
+            $this->error($e);
         }
+        return $this->fetch("user/shopcart", [
+            "title" => '购物车',
+            "data" => $get_shopcart_data,
+            "user_name" => $user_name
+        ]);
+
     }
 
     public function test(){

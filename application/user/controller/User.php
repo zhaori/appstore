@@ -52,6 +52,19 @@ class User extends Controller
         return $this->fetch('register', ["title" => "注册"]);
     }
 
+    public function quit()
+    {
+        $get_data = request()->post('value');
+        if (isset($get_data )){
+            Session::delete('user_name');
+            Session::delete('user_id');
+            Session::delete('token');
+            Cookie::delete('user_name');
+            Cookie::delete('token');
+            return ['state'=>true, 'msg'=>'退出成功'];
+        }
+    }
+
     public function addUser()
     {
         $user = trim(request()->post('user_name'));
@@ -70,7 +83,7 @@ class User extends Controller
             $this->error($validate);
         }
 
-        if ($user == Db::name('user')->where('user_name', $user)->value('user_name')) {
+        if (Db::name('user')->where('user_name', $user)->value('user_name')) {
             $this->error('不允许创建存在相同用户名');
         }
 
@@ -99,7 +112,7 @@ class User extends Controller
             if ($this->hash->verify($search_data['passwd'], $pwd, $search_data['salt'])) {
                 $uuid = base64_encode(password_hash($user, PASSWORD_BCRYPT));
                 Session::set('user_name', $user, 'think');
-                Session::get('user_id', $search_data['user_id']);
+                Session::set('user_id', $search_data['user_id']);
                 Session::set('token', $uuid, 'think');
                 if ($login_state) {
                     //login_state为true，即代表永久存储，但事实上设置一个月有效期
@@ -116,13 +129,5 @@ class User extends Controller
                 $this->error("密码错误");
             }
         }
-        return 0;
     }
-
-
-    public function test()
-    {
-
-    }
-
 }

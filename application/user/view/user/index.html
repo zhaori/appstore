@@ -67,7 +67,6 @@
 							<li><a href="#">开发工具</a></li>
 							<li><a href="#">图片视频</a></li>
 							<li><a href="#">网络相关</a></li>
-
 						</ul>
 					</li>
 				</ul>
@@ -78,11 +77,11 @@
 					<button type="submit" class="btn btn-primary">搜索</button>
 				</form>
 				<div hidden="hidden" id="login_user">{$user}</div>
-				<ul class="nav navbar-nav navbar-right" style="font-size: 20px">
+				<ul class="nav navbar-nav navbar-right" style="font-size: 20px" id="nav-url">
+					<li><a href="javascript:" id="shopping-cart"><span class="glyphicon glyphicon-shopping-cart">购物车</span></a></li>
 					<li class="login_li"><a href="javascript:" id="login"><span class="glyphicon glyphicon-log-in">登陆</span></a></li>
 					<li class="login_li"><a href="javascript:" id="register"><span class="glyphicon glyphicon-log-out">注册</span></a></li>
-					<li><a href="javascript:"><span id="user" class="glyphicon glyphicon-user" data-name={$user}>{$user}</span></a></li>
-					<li><a href="javascript:" id="shopping-cart"><span class="glyphicon glyphicon-shopping-cart">购物车</span></a></li>
+					<li><a href="javascript:" ><span class="glyphicon glyphicon-user" id="user" data-name='{$user}'>{$user}</span></a></li>
 				</ul>
 			</div>
 		</div>
@@ -131,13 +130,30 @@
 {js href="__JS__/jquery-3.6.0.min.js"}
 {js href="__JS__/bootstrap.min.js"}
 {js href='__JS__/jquery.cookie.min.js'}
+
+<script>
+	const select_user = $('#user');
+	if (select_user.text() === select_user.data('name')) {
+		$('#nav-url').append("<li id='login_out_li'><a href='javascript:' id='login_out'><span class='glyphicon glyphicon-off'>退出登录</span></a></li>")
+		$('#login_out').show();
+		$('#login').hide();
+		$('#register').hide();
+	}
+
+	if (select_user.text() === ''){
+		$('#login_out_li').hide();
+		$('#login').show();
+		$('#register').show();
+	}
+
+</script>
 <script>
 	$("#login").click(function () {
-		location.href = "/user/user/login"
+		location.href = "/user/user/login";
 	})
 
 	$("#register").click(function () {
-		location.href = "/user/user/register"
+		location.href = "/user/user/register";
 	})
 
 	$(".buy-info-logo").click(function () {
@@ -146,8 +162,16 @@
 	})
 
 	$("#shopping-cart").click(function () {
-        location.href = "/user/Detail/shoppCart?user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token')
+        location.href = "/user/Detail/shoppCart?user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token');
+	})
+
+	$("#login_out").click(function () {
+		$.post("/user/user/quit",{"value":true},
+		 function(data, state){
+			if (data['state']===true){
+				location.reload()
+			}
+		})
 	})
 </script>
-
 </html>
