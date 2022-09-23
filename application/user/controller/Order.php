@@ -46,11 +46,11 @@ class Order extends Controller
             try {
                 Db::name("tempcart")->where('temp_id', (int)$temp_id)->delete();
                 $this->redis->lRem('task_queue', (int)$temp_id, 0);
+                return ["state" => true, 'msg' => '删除成功'];
             } catch (Exception $e) {
-                var_dump($e);
+                $this->error($e);
             }
         }
-        return ["state" => true, 'msg' => '删除成功'];
     }
 
     public function buyorder()
@@ -179,6 +179,15 @@ class Order extends Controller
         }
     }
 
+    public function pay()
+    {
+        $get_sum = request()->post('pay_sum');
+        $get_pwd = request()->post('passwd');
+        $get_id =  request()->port('orderid');
+        if ((new LoginCheck())->check()) {
+            $select_order_id = Db::name('tempcart')->where('');
+        }
+    }
 
     public function test()
     {

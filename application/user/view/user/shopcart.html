@@ -22,6 +22,8 @@
 			<button type="button" id="select_all" class="btn-group select">全选</button>
 			<button type="button" id="select_del" class="btn-group select">反选</button>
 			<button type="button" id="select_submit" class="btn-group select">提交</button>
+			<button type="button" data-target="#myModal" data-toggle="modal" class="btn-group select btn-info">支付</button>
+			<button type="button" data-target="#myModal" data-toggle="modal" class="btn-group select btn-danger">清空</button>
 			<div class="col-md-10" style="border: 1px solid red;width:100%;height: 600px">
 				<div class="table-responsive">
 					<table class="table table-striped table-bordered table-hover" id="shopping">
@@ -70,9 +72,7 @@
 				</nav>
 			</div>
 		</div>
-		<button class="btn btn-primary btn-lg" data-target="#myModal" data-toggle="modal">
-			开始演示模态框
-		</button>
+		
 		<!-- 模态框（Modal） -->
 		<div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade" id="myModal" role="dialog"
 			 tabindex="-1">
@@ -149,10 +149,11 @@
 		//删除按钮
 		let uid = $(this).data("id");
 		$(this).closest(".tag_del").remove();
-		// $.post("/script/delete.php", {
-		// 	"text_id": uid
-		// });
-		// location.reload();
+		$.post("/script/delete.php", {"text_id": uid}, function(data, state){
+			if (data['state']===true){
+				location.reload();
+			}
+		});
 	})
 </script>
 </html>

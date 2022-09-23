@@ -54,7 +54,7 @@
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#"><span style="font-size: 26px">Windows AppStore</span></a>
+				<a class="navbar-brand" href="#"><span style="font-size: 26px">BookStore</span></a>
 			</div>
 			<div class="collapse navbar-collapse" id="topFixedNavbar1">
 				<ul class="nav navbar-nav" style="font-size: 20px">
@@ -62,17 +62,15 @@
 					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
 							aria-haspopup="true" aria-expanded="false">全部分类<span class="caret"></span></a>
 						<ul class="dropdown-menu" style="font-size: 18px">
-							<li><a href="#">办公效率</a></li>
-							<li><a href="#">系统工具</a></li>
-							<li><a href="#">开发工具</a></li>
-							<li><a href="#">图片视频</a></li>
-							<li><a href="#">网络相关</a></li>
+							{foreach $class as $key => $vo}
+								<li><a href="#">{$vo}</a></li>
+							{/foreach}
 						</ul>
 					</li>
 				</ul>
 				<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
-						<input type="text" class="form-control" placeholder="搜索商品分类或名称">
+						<input type="text" class="form-control" placeholder="搜索书籍分类或名称">
 					</div>
 					<button type="submit" class="btn btn-primary">搜索</button>
 				</form>
@@ -91,37 +89,19 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<h1>每日推荐</h1><br>
-				<div style="background-color:#DFDFDF;  width: 100%;height: 330px">
-					<div class="col-md-4 buy-link">
-						<span class="buy-info-title">Chrome浏览器</span>
-						<img src="../static/images/Logo.png" width="250" height="250" alt="Chrome浏览器"
-							class="buy-info-logo" data-id='9'>
-						<!--					软件说明最大37个字符-->
-						<p class="buy-info-text">由Google开发的一款设计简单、高效的Web浏览工具</p>
-						<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
-							class="buy-info-rmb-price">1</span>
+				<div style="background-color:#DFDFDF;width: 100%;height: auto">
+					{foreach $data as $key => $vo}
+					<div class="col-md-6 buy-link" style="margin-right: 30px;height:auto">						
+						<span class="buy-info-title">{$vo['comm_name']}</span>
+						<img src={$vo['photo']} width="250" height="250" alt={$vo['comm_name']}
+							class="buy-info-logo" data-id={$vo['comm_id']}>
+						<p class="buy-info-text" style="position:relative;top:10px">{$vo['column_synopsis']}</p>
+						<div style="position:relative;top:45px">
+							<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
+							class="buy-info-rmb-price">{$vo['comm_quantity']}</span>
+						</div>
 					</div>
-					<div class="col-md-4 buy-link" style="position: relative;left: 5%">
-						<span class="buy-info-title">Edge浏览器</span>
-						<img src="../static/images/Edge.png" width="250" height="250" alt="edge浏览器"
-							class="buy-info-logo" data-id='8'>
-						<p class="buy-info-text">由微软开发的基于Chromium开源项目及其他开源软件的网页浏览器</p>
-						<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
-							class="buy-info-rmb-price">12</span>
-					</div>
-					<div class="col-md-4 buy-link" style="position: relative;left: 10%">
-						<span class="buy-info-title">Firefox浏览器</span>
-						<img src="../static/images/Firefox.png" width="250" height="250" alt="Firefox浏览器"
-							class="buy-info-logo" data-id='7'>
-						<p class="buy-info-text">由Mozilla开发的自由及开放源代码的网页浏览器</p>
-						<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
-							class="buy-info-rmb-price">12</span>
-					</div>
-				</div>
-
-			</div>
-			<div class="col-md-12">
-				<h1 style="margin-top:50px">精品推荐</h1>
+					{/foreach}													
 			</div>
 		</div>
 	</div>

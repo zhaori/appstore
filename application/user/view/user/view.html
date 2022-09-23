@@ -18,11 +18,11 @@
 <br>
 
 <h1 style="text-align: center;position: relative;top: -30px">{$title}</h1>
-
+<p style="text-align:center">作者：<span style="color: blue;">{$author}</span></p>
 <div class="container">
 	<div class="row">
 		<div class="col-md-8" style="border: 1px solid red;width: 40%;height: 400px">
-			<img src="/static/images/Logo.png" width="250" height="250" alt="Chrome浏览器" class="view-info-logo" />
+			<img src={$photo} width="250" height="250" alt={$title} class="view-info-logo" />
 		</div>
 		<div class="col-md-4" style="width: 60%;height: 400px">
 			<h1 class="view-info-text" id="get_name" style="position: relative;top:-20px" data-id="{$goods_id}">{$name}</h1>
@@ -66,8 +66,10 @@
         </div>
         <div class="col-md-10" style="border: 1px solid red;width: 100%;height: auto">
             <div style="text-align: center">
-                <h1>商品简介</h1><br>
+                <h1>简介</h1><br>
                 <p>{$synopsis}</p>
+				<h1>详情</h1><br>
+				<p>{$detail}</p>
             </div>
         </div>
     </div>
@@ -77,7 +79,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">X
                     </button>
                     <h4 class="modal-title" id="myModalLabel">
                         订单提交验证
@@ -85,7 +87,7 @@
                 </div>
                 <div class="modal-body">
                     <div style="position: relative;left: 30%">
-                        <h2 style="position: relative;left: 34%">等待支付：30分钟未支付关闭订单</h2>
+                        <h2 style="position: relative;left: 34%">等待支付:30分钟未支付关闭订单</h2>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -120,6 +122,9 @@
 
 </script>
 <script>
+	var buy_num = $("#num").val();			//购买数量
+	var price = $("#price").data("price")  //单价
+
 	$("#add").click(function () {
 		var receive_means = $("input[name='receive']:checked").val();
 		var get_name = $("#get_name").text();
@@ -136,7 +141,6 @@
 			if (data["error_info"]) {
 				alert(data["error_info"])
 			} else {
-				// $.post("/user/detail/shoppCart", {"cartID": data})
 				alert("已加入购物车")
 			}
 		})
@@ -147,18 +151,22 @@
         // var buy_id = $("#get_name").data('id');
         var buy_num = $("#num").val();			//购买数量
         var price = $("#price").data("price")  //单价
-        $.post("/user/order/buy", {
-            "buy_name": get_name,
-            "buy_num": buy_num,
-            "buy_price": price,
-            "total_price": buy_num * price
-        }, function (data, state) {
-            if (data['state'] === false) {
-                alert(data['msg'])
-            } else {
-                location.href = "/user/order/buyorder?id=" + data['msg']
-            }
-        })
+		if (buy_num === ''){
+			alert('购买数量不能为空');
+		}else{
+			$.post("/user/order/buy", {
+				"buy_name": get_name,
+				"buy_num": buy_num,
+				"buy_price": price,
+				"total_price": buy_num * price
+			}, function (data, state) {
+				if (data['state'] === false) {
+					alert(data['msg'])
+				} else {
+					location.href = "/user/order/buyorder?id=" + data['msg']
+				}
+			})
+		}
 	})
 
 	$("#show").click(function () {

@@ -35,10 +35,11 @@ class User extends Controller
             }
         }
         return $this->fetch("index", [
-            "title" => "正品软件代理商城",
-            "logo" => '/static/store.ico',
-            "user" => $this->user
-
+            "title" => "电子书商城",
+            "logo"  => '/static/store.ico',
+            "user"  => $this->user,
+            'class' => Db::name('classify')->column('classify_name'),
+            'data'  => Db::name('commodity')->column('comm_id, comm_name,comm_quantity, photo, column_synopsis'),
         ]);
     }
 
@@ -129,5 +130,10 @@ class User extends Controller
                 $this->error("密码错误");
             }
         }
+    }
+
+    public function test()
+    {
+        var_dump(Db::name('commodity')->column('comm_name, photo, column_synopsis'));
     }
 }

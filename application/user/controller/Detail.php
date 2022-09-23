@@ -40,12 +40,15 @@ class Detail extends Controller
 
         return $this->fetch('user/view',[
             "title"         => "商品详情",
+            "photo"         => $get_data["photo"],
             "name"          => $get_data["comm_name"],
             "goods_id"      => $get_data["comm_id"],
             "classify"      => $class_name,
             "unit_price"    => $get_data["comm_quantity"],
             "synopsis"      => $get_data["column_synopsis"],
-            "reserve"       => $get_data["comm_reserve"]
+            "reserve"       => $get_data["comm_reserve"],
+            "detail"        => $get_data["comm_detail"],
+            "author"        => $get_data["author"]
         ]);
 
     }
@@ -65,12 +68,12 @@ class Detail extends Controller
             $select_cart_data_size = count($select_cart_data);
             if($select_cart_data_size > 0){
                 foreach ($select_cart_data as $key=>$value){
-                    if($data["name"]==$value["goods_name"]){
+                    if($data["buy_name"]==$value["goods_name"]){
                         return ["error_info"=>"重复添加到购物车"];
                     }else{
                         return Db::name("shopcart")->insertGetId([
                             "user_id"       => $user_id,
-                            "goods_name"    => $data["name"],
+                            "goods_name"    => $data["buy_name"],
                             "quantity"      => $data["buy_num"],
                             "unit_price"    => $data["buy_price"],
                             "total"         => $data["total_price"]
@@ -80,7 +83,7 @@ class Detail extends Controller
             }elseif($select_cart_data_size == 0 || is_null($select_cart_data_size)){
                 return Db::name("shopcart")->insertGetId([
                     "user_id"       => $user_id,
-                    "goods_name"    => $data["name"],
+                    "goods_name"    => $data["buy_name"],
                     "quantity"      => $data["buy_num"],
                     "unit_price"    => $data["buy_price"],
                     "total"         => $data["total_price"]
