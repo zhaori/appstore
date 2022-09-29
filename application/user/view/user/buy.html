@@ -11,7 +11,7 @@
 <div class="container">
     <div class="row">
         <div class="col-1">
-            <h2 style="text-align: center">请尽快支付,30分钟后我们将于北京时间:<span id="begin_time">{$end_time}</span>关闭订单
+            <h2 style="text-align: center">请尽快支付,30分钟后我们将关闭订单
             </h2>
             <div hidden id="temp_id">{$temp_id}</div>
             <br><br>
@@ -100,8 +100,8 @@
     })
 
     $("input[name='num']").change(function () {
-        var num = $("input[name='num']").val();
-        var price = $("#unit_price").text();
+        let num = $("input[name='num']").val();
+        let price = $("#unit_price").text();
         if (num === ''){
             alert('购买数量不能为空')
         }else{
@@ -110,9 +110,11 @@
     })
 
     $("#modal_submit").click(function () {
+        let num = $("input[name='num']").val();
+        let price = $("#unit_price").text();
         let pwd = $("input[name=''password]").val();
         let temp_id = $(this).data("id");
-		$.post("/user/order/pay", {"pay_sum": price*num, "passwd":pwd, "orderid":temp_id},
+		$.post("/user/order/pay", {"pay_sum": price*num, "passwd":pwd, "orderid":temp_id, "num":num},
             function (data, state){
                 if (data['state'] === true) {
                     alert('购买成功');
@@ -130,6 +132,6 @@
                 }
         })
     }
-    setTimeout(countdown, 1000*60*30)
+    setTimeout(countdown, 1000*60*30)// 1000毫秒=1秒
 </script>
 </html>

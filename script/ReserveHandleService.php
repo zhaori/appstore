@@ -7,7 +7,7 @@ class ReserveHandleService
     function __construct() {
         $this->redis = new Redis();
         $this->redis->connect('s5.z100.vip', 39166);
-        $this->redis->select(2);
+        $this->redis->select(3);
 
     }
 
@@ -16,7 +16,7 @@ class ReserveHandleService
         $queue_data = null;
         $await_queue = $this->redis->get("await_queue");
         if(!is_null($await_queue)){
-            $queue_data = $this->redis->lpop("await_queue");
+            $queue_data = $this->redis->rpop("await_queue");
         }
         return $queue_data;
     }
@@ -26,7 +26,7 @@ class ReserveHandleService
         $queue_data = null;
         $task_queue = $this->redis->get("task_queue");
         if(!is_null($task_queue)){
-            $queue_data = $this->redis->lpop("task_queue");
+            $queue_data = $this->redis->rpop("task_queue");
         }
         return $queue_data;
     }
