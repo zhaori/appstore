@@ -6,7 +6,7 @@ class ReserveHandleService
 
     function __construct() {
         $this->redis = new Redis();
-        $this->redis->connect('s5.z100.vip', 39166);
+        $this->redis->connect('s10.z100.vip', 39166);
         $this->redis->select(3);
 
     }

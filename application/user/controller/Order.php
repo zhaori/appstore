@@ -11,13 +11,13 @@ use think\facade\Session;
 use app\common\LoginCheck;
 use app\common\ReserveCheck;
 use app\common\PayKeyCheck;
+use think\facade\Validate;
 
 class Order extends Controller
 {
     public $user_name;
     public $redis;
     public $total;
-    public $repertory;
 
     public function __construct(App $app = null)
     {
@@ -42,20 +42,17 @@ class Order extends Controller
 
     public function deleteTempOrder(): array
     {
-        // 删除临时订单表数据，但只是标记为0，删除订单将在某个时间段统一删除或者做其它操作
-        $temp_id = request()->post('temp_id');
         $del_state = request()->post('time_state');
+        // 删除临时订单表数据，但只是标记为0，删除订单将在某个时间段统一删除或者做其它操作
         if (isset($del_state) && $del_state) {
-            try {
-                Db::name("tempcart")->where([
-                    'temp_id'   => (int)$temp_id,
-                    'user_id'   => (int)Session::get('user_id')
-                ])->update(['state'=>0]);
-                // $this->redis->lRem('task_queue', (int)$temp_id, 0);
-                return ["state" => true, 'msg' => '删除成功'];
-            } catch (Exception $e) {
-                $this->error($e);
-            }
+            $temp_id = request()->post('temp_id');
+            Db::name("tempcart")->where([
+                'temp_id'   => (int)$temp_id,
+                'user_id'   => (int)Session::get('user_id')
+            ])->update(['state'=>0]);
+            return ["state" => true, 'msg' => '删除成功'];
+        }else{
+            return ["state" => false, 'msg' => '删除失败'];
         }
     }
 
@@ -63,12 +60,13 @@ class Order extends Controller
     {
         //生成购物订单
         $temp_id = request()->get('id');
-        $get_buy = Db::name('tempcart')->where('temp_id', (int)$temp_id)->find();
-        // if (!(new ReserveCheck())->check($get_buy['goods_name'], $get_buy['quantity'])) {
-        //     $this->redis->lPush('await_queue', $get_buy['temp_id']);
-        // }else{
-        //     $this->redis->lPush('task_queue', $get_buy['temp_id']);
-        // }
+        $get_buy = Db::name('tempcart')->where([
+            'temp_id'       => (int)$temp_id,
+            'state'         => 1
+        ])->lock(true)->find();
+        if (is_null($get_buy)) {
+            $this->error('无效的订单参数');
+        }
         $begin_time = $get_buy['create_time'];
 
         return $this->fetch("/user/buy", [
@@ -80,7 +78,6 @@ class Order extends Controller
             "total_price"   => $get_buy['total'],
             "end_time"      => date('Y-m-d H:i:s', strtotime("$begin_time + 30 minute"))
         ]);
-
     }
 
     public function buy()
@@ -187,44 +184,83 @@ class Order extends Controller
         }
     }
 
-    public function pay()
+    public function pay(): array
     {     
         if ((new LoginCheck())->check()) {
             $user_id = Session::get('user_id');
             $get_pwd = request()->post('passwd');
             $get_num = request()->post('num');
-            //验证支付密码成功后，再验证库存是否够
+            $get_pay_sum = request()->post('pay_sum');
+            //验证支付密码
+            $get_temp = Db::name("tempcart");
             if ((new PayKeyCheck())->check($user_id, $get_pwd)){
-                $get_sum = request()->post('pay_sum');
-                $get_id =  request()->port('orderid');
-                $get_good_name = Db::name("tempcart")->where([
+                $get_id =  request()->post('submit_order_id');
+                $get_good_name = $get_temp->where([
                     "user_id"   => (int)$user_id,
-                    "comm_id"   => (int)$get_id
+                    "temp_id"   => (int)$get_id,
+                    "state"     => 1
                 ])->value('goods_name');
-                // 验证库存是否充足
-                if ((new ReserveCheck())->check($get_good_name, (int)$get_num)){
-                    $select_order_id = Db::name('tempcart')->where([
-                        'user_id'       => (int)$user_id,
-                        'goods_name'    => $get_good_name,
-                        'state'         => 1
-                    ])->update(['total' => $get_sum]);
-                    $this->redis->lpush('task_queue', json_encode([
-                            "order_id"  => (int)$select_order_id,
-                            "user_id"   => (int)$user_id
-                        ]));
-                    
-                    $get_now_reserve = Db::name('commodity')->where('comm_id', (int)$get_id)->find()['comm_reserve'];
-                    Db::name("commodity")->where([
-                        "user_id"   => (int)$user_id,
-                        "comm_id"   => (int)$get_id
-                    ])->update(['comm_reserve'=>(int)$get_now_reserve-(int)$get_num]);
-                }else{
-                    return ["state"=>\false, "msg"=>"库存不足"];
-                }    
+                $this->redis->lPush('task_queue',json_encode([
+                    "user_id"       => $user_id,
+                    "temp_id"       => $get_id,
+                    "get_goods_name"    => $get_good_name,
+                    "get_num"       => $get_num,
+                    "get_pay_sum"   => $get_pay_sum
+                ]));
             }else{
-                return ["state"=>false, "msg"=>"支付失败，密码错误"];
+                return ["state"=>false, "msg"=>"支付验证失败"];
             }
-            
+
+            // 验证库存是否充足 这一步提交给队列处理
+//            if ((new ReserveCheck())->check($get_good_name, $get_num)){
+//                $get_pay_sum = request()->post('pay_sum');
+//                $get_temp->where([
+//                    'user_id'       => (int)$user_id,
+//                    'goods_name'    => $get_good_name,
+//                    'state'         => 1
+//                ])->update(['total'=>$get_pay_sum]);
+//
+//                Db::name("commodity")->where("comm_name", $get_good_name)->setDec('comm_reserve', (int)$get_num);
+//
+//                $pay_bank = Db::name('bank')->where('user_id', (int)$user_id);
+//                $now_money = $pay_bank->value('money_num');
+//                if ($now_money >= $get_pay_sum) {
+//                    $pay_bank->setField("money_num", $now_money-$get_pay_sum);
+//                    $this->redis->lpush('task_queue', json_encode([
+//                        "order_id"      => (int)$get_temp->where([
+//                            'user_id'       => (int)$user_id,
+//                            'goods_name'    => $get_good_name,
+//                            'state'         => 1
+//                        ])->lock(true)->value('temp_id'),
+//                        "user_id"       => (int)$user_id
+//                    ]));
+//                }else{
+//                    return ['state'=>false, 'msg'=>'银行资金不足'];
+//                }
+//            }else{
+//                return ["state"=>false, "msg"=>"支付失败，库存不足"];
+//            }
+        }
+        return ['state'=>true, "msg"=>"等待支付成功"];
+    }
+
+    public function await_queue(){
+        // 处理等待队列
+        return $this->redis->rpop("await_queue");
+    }
+
+    public function task_queue(){
+        //处理订单队列
+        return $this->redis->rpop("task_queue");
+    }
+
+    public function queue()
+    {
+        $queue_data = json_decode(self::task_queue());
+        if (!is_null($queue_data)) {
+            if ((new ReserveCheck())->check($queue_data['get_good_name'], $queue_data['get_num'])) {
+
+            }
         }
     }
 

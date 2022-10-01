@@ -33,7 +33,7 @@ return [
 //    'prefix' => 'module',
 //    'auto_start' => true,
 //    // redis主机
-//    'host' => 's5.z100.vip',
+//    'host' => 's10.z100.vip',
 //    // redis端口
 //    'port' => 39166,
 //    // 密码

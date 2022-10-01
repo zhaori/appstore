@@ -76,7 +76,7 @@
      // 数据库类型
      'type'            => 'mysql',
      // 服务器地址
-     'hostname'        => 's5.z100.vip',
+     'hostname'        => 's10.z100.vip',
      // 数据库名
      'database'        => 'softwarestore',
      // 用户名

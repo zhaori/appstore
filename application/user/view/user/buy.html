@@ -80,12 +80,12 @@
 	$(function () {
 		$('#myModal').modal('hide')
 	});
-	$(function () {
-		$('#myModal').on('hide.bs.modal', function () {
-			alert('你取消了订单的提交');
-		})
-		return false;
-	});
+	// $(function () {
+	// 	$('#myModal').on('hide.bs.modal', function () {
+	// 		alert('你取消了订单的提交');
+	// 	})
+	// 	return false;
+	// });
 </script>
 <script>
     $("#del-btn").click(function () {
@@ -112,12 +112,15 @@
     $("#modal_submit").click(function () {
         let num = $("input[name='num']").val();
         let price = $("#unit_price").text();
-        let pwd = $("input[name=''password]").val();
-        let temp_id = $(this).data("id");
-		$.post("/user/order/pay", {"pay_sum": price*num, "passwd":pwd, "orderid":temp_id, "num":num},
+        let pwd = $("input[name='password']").val();
+        let temp_id = $("#temp_id").text();
+		$.post("/user/order/pay", {"pay_sum": price*num, "passwd":pwd, "submit_order_id":temp_id, "num":num},
             function (data, state){
                 if (data['state'] === true) {
                     alert('购买成功');
+                    $('.close').click();
+                }else {
+                    alert(data['msg'])
                 }
         })
 	});
