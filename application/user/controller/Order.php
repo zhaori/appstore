@@ -49,7 +49,7 @@ class Order extends Controller
             Db::name("tempcart")->where([
                 'temp_id'   => (int)$temp_id,
                 'user_id'   => (int)Session::get('user_id')
-            ])->update(['state'=>0]);
+            ])->update(['state'=>-1]);
             return ["state" => true, 'msg' => '删除成功'];
         }else{
             return ["state" => false, 'msg' => '删除失败'];
@@ -207,39 +207,10 @@ class Order extends Controller
                     "get_num"       => $get_num,
                     "get_pay_sum"   => $get_pay_sum
                 ]));
+                self::queue();
             }else{
                 return ["state"=>false, "msg"=>"支付验证失败"];
             }
-
-            // 验证库存是否充足 这一步提交给队列处理
-//            if ((new ReserveCheck())->check($get_good_name, $get_num)){
-//                $get_pay_sum = request()->post('pay_sum');
-//                $get_temp->where([
-//                    'user_id'       => (int)$user_id,
-//                    'goods_name'    => $get_good_name,
-//                    'state'         => 1
-//                ])->update(['total'=>$get_pay_sum]);
-//
-//                Db::name("commodity")->where("comm_name", $get_good_name)->setDec('comm_reserve', (int)$get_num);
-//
-//                $pay_bank = Db::name('bank')->where('user_id', (int)$user_id);
-//                $now_money = $pay_bank->value('money_num');
-//                if ($now_money >= $get_pay_sum) {
-//                    $pay_bank->setField("money_num", $now_money-$get_pay_sum);
-//                    $this->redis->lpush('task_queue', json_encode([
-//                        "order_id"      => (int)$get_temp->where([
-//                            'user_id'       => (int)$user_id,
-//                            'goods_name'    => $get_good_name,
-//                            'state'         => 1
-//                        ])->lock(true)->value('temp_id'),
-//                        "user_id"       => (int)$user_id
-//                    ]));
-//                }else{
-//                    return ['state'=>false, 'msg'=>'银行资金不足'];
-//                }
-//            }else{
-//                return ["state"=>false, "msg"=>"支付失败，库存不足"];
-//            }
         }
         return ['state'=>true, "msg"=>"等待支付成功"];
     }
@@ -256,18 +227,42 @@ class Order extends Controller
 
     public function queue()
     {
-        $queue_data = json_decode(self::task_queue());
+        $queue_data = json_decode(self::task_queue(), true);
+        var_dump($queue_data['get_goods_name']);
+        var_dump($queue_data['get_num']);
         if (!is_null($queue_data)) {
-            if ((new ReserveCheck())->check($queue_data['get_good_name'], $queue_data['get_num'])) {
+            if ((new ReserveCheck())->check($queue_data['get_goods_name'], $queue_data['get_num'])) {
+                $get_temp = Db::name("tempcart");
+                $get_temp->where([
+                    'user_id'       => (int)$queue_data['user_id'],
+                    'goods_name'    => $queue_data['get_goods_name'],
+                    'state'         => 1
+                ])->update(['total'=>$queue_data['get_pay_sum']]);
 
+                Db::name("commodity")->where("comm_name", $queue_data['get_goods_name'])
+                    ->setDec('comm_reserve', (int)$queue_data['get_num']);
+
+                $pay_bank = Db::name('bank')->where('user_id', (int)$queue_data['user_id']);
+                $now_money = $pay_bank->value('money_num');
+                if ($now_money >= $queue_data['get_pay_sum']) {
+                    $pay_bank->setField("money_num", $now_money-$queue_data['get_pay_sum']);
+
+                }else{
+                    return ['state'=>false, 'msg'=>'银行资金不足'];
+                }
+            }else{
+                $this->redis->lPush('await_queue', json_encode($queue_data));
+                return ["state"=>false, "msg"=>"支付失败，库存不足，订单位于等候中，可在我的订单里找到处理结果"];
             }
+
         }
+        return true;
     }
 
     public function test()
     {
         // $this->redis->lPush('test', \json_encode(['id'=>1, 'state'=>\true]));
-        var_dump($this->redis->rpop('test'));
+        self::queue();
     }
 }
 
