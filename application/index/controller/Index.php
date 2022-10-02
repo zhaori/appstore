@@ -1,6 +1,6 @@
 <?php
 
-namespace app\user\controller;
+namespace app\index\controller;
 
 use app\common\Hash;
 use app\common\LoginCheck;
@@ -11,7 +11,7 @@ use think\Exception;
 use think\facade\Cookie;
 use think\facade\Session;
 
-class User extends Controller
+class Index extends Controller
 {
     private $hash;
     private $user;

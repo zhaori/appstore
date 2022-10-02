@@ -1,6 +1,6 @@
 <?php
 
-namespace app\user\controller;
+namespace app\index\controller;
 use app\common\LoginCheck;
 use think\App;
 use think\Controller;

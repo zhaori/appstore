@@ -24,8 +24,6 @@
       "ext-curl": "*",
       "ext-mysqli": "*",
       "ext-openssl": "*",
-      "ext-libsodium": "*",
-      "ext-mcrypt": "*",
       "ext-mbstring": "*"
     },
     "autoload": {

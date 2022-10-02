@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77373537b3a6bd90cf65378605cf14ec",
+    "content-hash": "dc9bf050a6fa29a0110c66f62cf2d8e6",
     "packages": [
         {
             "name": "topthink/framework",
@@ -181,8 +181,6 @@
         "ext-curl": "*",
         "ext-mysqli": "*",
         "ext-openssl": "*",
-        "ext-libsodium": "*",
-        "ext-mcrypt": "*",
         "ext-mbstring": "*"
     },
     "platform-dev": [],
