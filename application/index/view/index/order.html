@@ -136,7 +136,7 @@
             buy_order.push({"goods_name":goods_name,"price":price, "quantity":quantity})
 
         })
-        $.post("/user/order/test", {"order":buy_order,"user_name":$("#user_name").text()})
+        $.post("/index/order/test", {"order":buy_order,"user_name":$("#user_name").text()})
     })
 </script>
 </html>

@@ -129,20 +129,20 @@
 </script>
 <script>
 	$("#login").click(function () {
-		location.href = "/user/user/login";
+		location.href = "/index/index/login";
 	})
 
 	$("#register").click(function () {
-		location.href = "/user/user/register";
+		location.href = "/index/index/register";
 	})
 
 	$(".buy-info-logo").click(function () {
 		var buy_id = $(this).data('id');
-		location.href = "/user/detail?id=" + buy_id + "&&user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token');
+		location.href = "/index/detail?id=" + buy_id + '&&token=' + $.cookie('token');
 	})
 
 	$("#shopping-cart").click(function () {
-        location.href = "/user/Detail/shoppCart?user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token');
+        location.href = "/index/Detail/shoppCart?token=" + $.cookie('token');
 	})
 
 	$("#login_out").click(function () {

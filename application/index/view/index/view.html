@@ -154,7 +154,7 @@
 		if (buy_num === ''){
 			alert('购买数量不能为空');
 		}else{
-			$.post("/user/order/buy", {
+			$.post("/index/order/buy", {
 				"buy_name": get_name,
 				"buy_num": buy_num,
 				"buy_price": price,
@@ -163,14 +163,14 @@
 				if (data['state'] === false) {
 					alert(data['msg'])
 				} else {
-					location.href = "/user/order/buyorder?id=" + data['msg']
+					location.href = "/index/order/buyorder?id=" + data['msg']
 				}
 			})
 		}
 	})
 
 	$("#show").click(function () {
-        location.href = "/user/detail/shoppCart?user_name=" + $.cookie('user_name') + '&&token=' + $.cookie('token');
+        location.href = "/user/detail/shoppCart?&&token=" + $.cookie('token');
 	})
 </script>
 </html>

@@ -114,7 +114,7 @@
         let price = $("#unit_price").text();
         let pwd = $("input[name='password']").val();
         let temp_id = $("#temp_id").text();
-		$.post("/user/order/pay", {"pay_sum": price*num, "passwd":pwd, "submit_order_id":temp_id, "num":num},
+		$.post("/index/order/pay", {"pay_sum": price*num, "passwd":pwd, "submit_order_id":temp_id, "num":num},
             function (data, state){
                 if (data['state'] === true) {
                     alert('购买成功');
@@ -127,7 +127,7 @@
 
     function countdown() {
         var id = $("#temp_id").text();
-        $.post("/user/order/deleteTempOrder", {"time_state": true, 'temp_id': id},
+        $.post("/index/order/deleteTempOrder", {"time_state": true, 'temp_id': id},
             function (data, state) {
                 if (data['state'] === true) {
                     alert('超时未支付，已关闭订单')

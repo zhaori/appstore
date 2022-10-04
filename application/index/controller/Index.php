@@ -97,7 +97,7 @@ class Index extends Controller
                 'passwd' => $hash_data['passwd'],
                 'salt' => $hash_data['salt']
             ]);
-            $this->success('注册成功，自动返回登录界面', '/user/user/login');
+            $this->success('注册成功，自动返回登录界面', '/index/index/login');
         } catch (Exception $e) {
             $this->error($e);
         }
@@ -125,7 +125,7 @@ class Index extends Controller
                     Cookie::set('user_name', base64_encode(md5($user)), 86400);
                     Cookie::set('token', $uuid, 86400);
                 }
-                $this->success(true, '/user/user', $uuid);
+                $this->success(true, '/index/index', $uuid);
             }else {
                 $this->error("密码错误");
             }

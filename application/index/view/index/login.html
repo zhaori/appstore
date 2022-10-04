@@ -57,10 +57,10 @@
 		var pwd = $("#pwd").val();
 		var ischeck = $("#save_login_info").prop('checked')
 
-		$.post("/user/user/verifyLogin", {'user_name': user_name, 'password': pwd, 'check_state': ischeck},
+		$.post("/index/index/verifyLogin", {'user_name': user_name, 'password': pwd, 'check_state': ischeck},
 				function (data, state) {
 					if (data['msg'] === true) {
-						location.href = '/user/user?user_name=' + $.cookie("user_name") + '&&token=' + data['data'];
+						location.href = '/index/index?token=' + data['data'];
 					}
 				}
 		)
