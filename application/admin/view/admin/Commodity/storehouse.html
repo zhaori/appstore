@@ -112,7 +112,7 @@
         var classify = $("#classify_list").val()
         $.post('/admin/Store/add',{'name':name, 'price':price, 'num':num, 'classify':classify},
             function(data, state){
-                if(data=='success'){
+                if(data === 'success'){
                     $("#refresh").click()
                 }
             }

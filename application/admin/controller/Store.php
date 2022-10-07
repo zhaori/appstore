@@ -1,16 +1,16 @@
 <?php
 
 namespace app\admin\controller;
+use app\admin\model\CommodityModel;
 use think\Db;
 use think\Controller;
 use think\Exception;
 
 class Store extends Controller
 {
-    public $commodity_list;
     public function index(){
         return  $this
-                ->fetch('user/Commodity/storehouse',
+                ->fetch('admin/Commodity/storehouse',
                 [
                     'title'              => '商品管理',
                     'classify'           => Db::name('classify')->field('classify_name')->select()            
@@ -34,7 +34,7 @@ class Store extends Controller
             ]);
             return 'success';
         }catch(Exception $e){
-            return $this->error($e);
+            $this->error($e);
         }
             
         // $this->commodity_list = Db::name('commodity')->select();
@@ -60,10 +60,10 @@ class Store extends Controller
         if($page>$MaxPage){
             return "不要超过最大值";
         }elseif($page==1){
-            return redirect('user/Commodity/storehouse');
+            return redirect('admin/Commodity/storehouse');
         }
 
-        return $this->fetch('user/Commodity/storehouse-list',
+        return $this->fetch('admin/Commodity/storehouse-list',
             [
                "data"       =>$data,
                "MaxPage"    =>$MaxPage
@@ -71,11 +71,11 @@ class Store extends Controller
         );
     }
 
-    public function update(){
+    public function clear(){
         $update_id = request()->post("id");
         try{
             $data = Db::name('commodity')->where('comm_id', $update_id)->select()[0];
-            
+
             // return $data["comm_name"];
         }catch(Exception $e){
             return $e;
@@ -83,7 +83,7 @@ class Store extends Controller
     }
 
     public function edit(){
-        return $this->fetch('user/edit',[
+        return $this->fetch('admin/edit',[
             "title"                 =>'修改',
             'classify'              => Db::name('classify')->field('classify_name')->select()            
         ]);
@@ -94,8 +94,10 @@ class Store extends Controller
     }
 
 
-    public function test($page=1){
-        $data = Db::name('commodity')->paginate(5, false, ["page"=>$page]);
-        return json($data);
+    public function test(){
+        return (new CommodityModel())->clear();
+//        $data = Db::name('commodity')->paginate(5, false, ["page"=>$page]);
+//        return json($data);
     }
+
 }

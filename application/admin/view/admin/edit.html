@@ -17,22 +17,22 @@
     
     <div style="position: relative;left: 20%;top: 20px;">
         <div class="form-group">
-            <label>商品名称</label>
+            <label for='name'>商品名称</label>
             <input type="text" class="form-control" id='name' />
         </div>
 
         <div class="form-group">
-            <label>商品单价</label>
+            <label for="price">商品单价</label>
             <input type="number" class="form-control" oninput="if(value<0)value=0" id="price" />
         </div>
 
         <div class="form-group">
-            <label>商品数量</label>
+            <label for="num">商品数量</label>
             <input type="number" class="form-control" oninput="if(value<0)value=0" id="num" />
         </div>
         
         <div class="form-group">
-            <label>商品分类</label>                   
+            <label for="classify_list">商品分类</label>
             <select class="form-control" style="width: 200px;height: 40px;" id="classify_list">
                 <option disabled="disabled" selected>---下拉选择商品分类---</option>
                 {foreach $classify as $key=>$value}

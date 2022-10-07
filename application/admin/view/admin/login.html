@@ -20,15 +20,15 @@
 			<div class="col-md-9" style="position: relative;left: 130px">
 				<div class="col-md-2">用户名</div>
 				<label class="form-group">
-					<input class="form-control" type="text">
+					<input class="form-control" type="text" name="user">
 				</label><br><br>
 
 				<div class="col-md-2">密码</div>
 				<label class="form-group">
-					<input class="form-control" type="password">
+					<input class="form-control" type="password" name="passwd">
 				</label><br><br>
 				<label class="form-group">
-					<button class="btn-lg btn-primary" style="position: relative;left: 200px">登录</button>
+					<button type="button" class="btn-lg btn-primary" style="position: relative;left: 200px" id="login">登录</button>
 				</label>
 			</div>
 		</div>
@@ -38,6 +38,10 @@
 	{js href='__JS__/jquery-3.6.0.min.js'}
 	{js href='__JS__/sha256.js'}
 <script>
-
+	$("#login").click(function () {
+		const user_name = $("input[name='user']").val()
+		const user_passwd = $("input[name='passwd']").val()
+		$.post("/admin/admin")
+	})
 </script>
 </html>

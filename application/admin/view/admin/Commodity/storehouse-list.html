@@ -23,8 +23,8 @@
                     {foreach $data as $key=>$value}
                     <tr id="tr-del">
                         <td data-name={$value.comm_name}>{$value.comm_name}</td>
-                        <td data-reserve={$value.comm_reserve}>{$value.comm_reserve}</td>
-                        <td data-quantity={$value.comm_quantity}>{$value.comm_quantity}</td>
+                        <td data-reserve={$value.comm_quantity}>{$value.comm_quantity}</td>
+                        <td data-quantity={$value.comm_reserve}>{$value.comm_reserve}</td>
                         <td>
                             <a class="del" href="javascript:" data-id="{$value.comm_id}">下架</a>|
                             <a class="update" href="javascript:" data-id="{$value.comm_id}">修改</a>
@@ -61,7 +61,7 @@
         var get_id = $(this).data('id');
         $.post("/admin/Store/del", { 'id': get_id },
             function (data, state) {
-                if (data == 'success') {
+                if (data === 'success') {
                     $(this).closest('#tr-del').remove()
                     location.reload()
                 }
@@ -73,7 +73,7 @@
         
         var get_id = $(this).data('id');
         console.log($(this).parent().parent().find('td').data("name"))
-        $.post("/admin/Store/update", { 'id': get_id },
+        $.post("/admin/Store/update", {'id': get_id },
             function (data, state) {
                 openNewWindow("/admin/Store/edit", "修改",500,500)
                

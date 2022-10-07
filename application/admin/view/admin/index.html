@@ -36,16 +36,17 @@
     </nav>
     <div class="container">
         <div class="row">
-            <div class="jumbotron" style="margin-top:80px">
+            <div class="jumbotron" style="margin-top:55px">
                 <h1 style="text-align: center;">这是后台管理页面</h1>         
             </div> 
             <div class="col-md-2" style="width: 20%;height: 500px;">
                 <ul class="nav navbar-nav">
                     <li style="margin-top:30px">
-                        <a class="nav-title" href="javascript:">商品管理</a>
+                        <a class="nav-title" href="javascript:">商品管理<span class="glyphicon glyphicon-plus"></span></a>
                             <ul class="nav navbar-nav nav-title-title">
                                 <li><a href="javascript:" class="btn-link" id="comm-store">上/下架商品</a></li>
-                                <li><a href="javascript:" class="btn-link" id="update">整理商品</a></li>
+                                <li><a href="javascript:" class="btn-link" id="clear">整理商品</a></li>
+                                <li><a href="javascript:" class="btn-link" id="explain">补充商品说明</a></li>
                             </ul>
                     </li>
                     <!-- <li style="margin-top:30px">
@@ -57,20 +58,20 @@
                             </ul>
                     </li> -->
                     <li style="margin-top:30px">
-                        <a class="nav-title" href="javascript:">订单管理</a>
+                        <a class="nav-title" href="javascript:">订单管理<span class="glyphicon glyphicon-plus"></span></a>
                             <ul class ="nav navbar-nav nav-title-title">
                                 <li><a href="javascript:" class="btn-link">查看订单</a></li>                               
                             </ul>
                     </li>
                     <li style="margin-top:30px">
-                        <a class="nav-title" href="javascript:">用户管理</a>
+                        <a class="nav-title" href="javascript:">用户管理<span class="glyphicon glyphicon-plus"></span></a>
                             <ul class="nav navbar-nav nav-title-title">                               
                                 <li><a href="javascript:" class="btn-link">用户管理</a></li>
                                 <li><a href="javascript:" class="btn-link">评论审核</a></li>
                             </ul>
                     </li>
                     <li style="margin-top:30px">
-                        <a class="nav-title" href="javascript:">系统设置</a>
+                        <a class="nav-title" href="javascript:">更多设置<span class="glyphicon glyphicon-plus"></span></a>
                             <ul class="nav navbar-nav nav-title-title">                               
                                 <li><a href="javascript:" class="btn-link">评论设置</a></li>
                                 <li><a href="javascript:" class="btn-link">订单设置</a></li>
@@ -79,8 +80,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-8" style="border: 1px solid red;width: 80%;height:600px;margin-top: -20px;">
-                
+            <div class="col-md-8" style="border: 1px solid red;width: 80%;height:600px;margin-top: -21px;" id="html_value">
             </div>
         </div>
         <nav class="navbar navbar-default navbar-fixed-bottom">
@@ -88,7 +88,6 @@
                 <div id="navbar" class="navbar-collapse collapse">
                    <h2>这是底部导航</h2>
                 </div>
-                <!--/.nav-collapse -->
             </div>
         </nav>
     </div>
@@ -115,7 +114,12 @@
     })
 
     $('#comm-store').click(function(){
+        // 上下架商品
         location.href='/admin/Store'
+    })
+    
+    $('#clear').click(function () {
+        location.href = '/admin/Store/clear'
     })
 </script>
 </html>

@@ -63,6 +63,8 @@ class Index extends Controller
             Cookie::delete('user_name');
             Cookie::delete('token');
             return ['state'=>true, 'msg'=>'退出成功'];
+        }else {
+            return ['state'=>false, 'msg'=>'退出失败'];
         }
     }
 
