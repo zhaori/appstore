@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{$title}</title>
+	{css href="__CSS__/bootstrap.min.css"}
+	<style>
+		h1 {text-align: center;}
+		.buy-link {
+			border: 1px solid blue;
+			background-color: white;
+			width: 30%;
+			height: 330px
+		}
+
+		.buy-info-title {
+			font-size: 23px;
+			position: relative;
+			left: 27%;
+			top: 20px
+		}
+
+		.buy-info-logo {
+			position: relative;
+			left: 8%;
+			top: -20px;
+			cursor: pointer;
+		}
+
+		.buy-info-text {
+			font-size: 18px;
+			position: relative;
+			top: -50px
+		}
+
+		.buy-info-rmb {
+			position: relative;
+			top: -50px
+		}
+
+		.buy-info-rmb-price {
+			font-size: 20px;
+			color: red;
+			position: relative;
+			top: -48px
+		}
+	</style>
+</head>
+
+<body style="padding-top: 70px;background-color: #FAFAFA">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>{$title}</h1><br>
+				<div style="background-color:#DFDFDF;width: 100%;height: auto">
+					{foreach $data as $key => $vo}
+					<div class="col-md-6 buy-link" style="margin-right: 30px;height:auto">						
+						<span class="buy-info-title">{$vo['comm_name']}</span>
+						<img src={$vo['photo']} width="250" height="250" alt={$vo['comm_name']}
+							class="buy-info-logo" data-id={$vo['comm_id']}>
+						<div style="position:relative;top:45px">
+							<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
+							class="buy-info-rmb-price">{$vo['comm_reserve']}</span>
+						</div>
+					</div>
+					{/foreach}													
+			</div>
+		</div>
+	</div>
+	</div>
+</body>
+{js href="__JS__/jquery-3.6.0.min.js"}
+{js href="__JS__/bootstrap.min.js"}
+{js href='__JS__/jquery.cookie.min.js'}
+
+<script>
+	$(".buy-info-logo").click(function () {
+		var buy_id = $(this).data('id');
+		location.href = "/index/detail?id=" + buy_id + '&&token=' + $.cookie('token');
+	})	
+</script>
+</html>

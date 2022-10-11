@@ -23,7 +23,7 @@ class Order extends Controller
     {
         parent::__construct($app);
         if (!(new LoginCheck())->check()) {
-            $this->error('请登录后操作', '/user/user/login');
+            $this->error('请登录后操作', '/index/index/login');
         }else{
             $this->redis = new Redis();
             $this->redis->connect(config('queue.host'), config('queue.port'));
@@ -69,7 +69,7 @@ class Order extends Controller
         }
         $begin_time = $get_buy['create_time'];
 
-        return $this->fetch("/user/buy", [
+        return $this->fetch("index/buy", [
             "title"         => '订单',
             'temp_id'       => $temp_id,
             'buy_name'      => $get_buy['goods_name'],
@@ -172,7 +172,7 @@ class Order extends Controller
             foreach ($get_cart as $key=>$value){
                 $n+=$value["total"];
             }
-            return $this->fetch("user/order",[
+            return $this->fetch("index/order",[
                 "title"         => "订单页",
                 "maxPage"       => $max_page,
                 "data"          => $get_cart,
@@ -180,7 +180,7 @@ class Order extends Controller
                 "user_name"     => $user
             ]);
         }else{
-            $this->error("未登录,返回登录页", "/user/user/login");
+            $this->error("未登录,返回登录页", "/index/index/login");
         }
     }
 

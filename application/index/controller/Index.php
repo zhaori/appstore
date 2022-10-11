@@ -35,12 +35,34 @@ class Index extends Controller
             }
         }
         return $this->fetch("index", [
-            "title" => "电子书商城",
-            "logo"  => '/static/store.ico',
-            "user"  => $this->user,
-            'class' => Db::name('classify')->column('classify_name'),
-            'data'  => Db::name('commodity')->column('comm_id, comm_name,comm_quantity, photo, column_synopsis'),
+            "title"     => "电子书商城",
+            "logo"      => '/static/store.ico',
+            "user"      => $this->user,
+            "subtitle"  => '精品书籍',
+            'class'     => Db::name('classify')->where('state', 1)->column('classify_name'),
+            'data'      => Db::name('commodity')->column('comm_id, comm_name,comm_reserve, photo'),
         ]);
+    }
+
+    public function classifyindex()
+    {
+        $classify_page = request()->get("classify_name");
+        if (isset($classify_page)) {
+            $class_data = Db::name('classify')->where([
+                'state'         => 1,
+                "classify_name" => trim($classify_page)
+            ])->field('classify_name, classify_id')->find();
+                
+            return $this->fetch("index", [
+                "title" => "电子书商城",
+                "logo"  => '/static/store.ico',
+                "user"  => $this->user,
+                "subtitle"  => $class_data['classify_name'],
+                'class' => [null],
+                'classify_name' => $class_data['classify_name'],
+                'data'  => Db::name('commodity')->where("classify_id", (int)$class_data["classify_id"])->column('comm_id, comm_name,comm_reserve, photo'),
+            ]);
+        }
     }
 
     public function login()
@@ -51,6 +73,25 @@ class Index extends Controller
     public function register()
     {
         return $this->fetch('register', ["title" => "注册"]);
+    }
+
+    public function search($data)
+    {
+        return $this->fetch('index/search', [
+            "title" => '搜索结果......',
+            'data'  => $data
+        ]);
+    }
+
+    public function searchHtml()
+    {
+        $get_str = request()->post('search_text');
+        $get_data = Db::name('commodity')->whereLike('comm_name', trim($get_str))->select();
+        if (!is_null($get_data)) {
+            return json(["state"=>true, "data"=>$get_data, "url"=>"/index/index/search"]);
+        }else {
+            $this->error("搜索的书籍不存在，另外再搜索一遍看看吧");
+        }
     }
 
     public function quit()
@@ -132,10 +173,5 @@ class Index extends Controller
                 $this->error("密码错误");
             }
         }
-    }
-
-    public function test()
-    {
-        var_dump(Db::name('commodity')->column('comm_name, photo, column_synopsis'));
     }
 }

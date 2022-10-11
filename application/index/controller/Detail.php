@@ -19,7 +19,7 @@ class Detail extends Controller
         $login = new LoginCheck();
         $this->login_verify = $login->check();
         if (!$this->login_verify) {
-            $this->error('请登录后操作', '/user/user/login');
+            $this->error('请登录后操作', '/index/index/login');
         }
 
     }
@@ -32,13 +32,12 @@ class Detail extends Controller
         try {
             $get_data = $get_comm[0];
         } catch (Exception $e) {
-            $this->error("数据不存在","/user/user");
+            $this->error("数据不存在","/index/index");
         }
 
 
         $class_name = DB::name("classify")->where("classify_id", (int)$get_data["classify_id"])->value("classify_name");
-
-        return $this->fetch('user/view',[
+        return $this->fetch('index/view',[
             "title"         => "商品详情",
             "photo"         => $get_data["photo"],
             "name"          => $get_data["comm_name"],
@@ -90,7 +89,7 @@ class Detail extends Controller
                 ]);
             }
         }else{
-            $this->error('未提交信息，错误页面', "/user/Detail");
+            $this->error('未提交信息，错误页面', "/index/Detail");
         }
         return 1;
     }
@@ -103,7 +102,7 @@ class Detail extends Controller
         } catch (DbException $e) {
             $this->error($e);
         }
-        return $this->fetch("user/shopcart", [
+        return $this->fetch("index/shopcart", [
             "title" => '购物车',
             "data" => $get_shopcart_data,
             "user_name" => $user_name

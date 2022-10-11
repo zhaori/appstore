@@ -25,7 +25,7 @@ class Admin extends Controller
 //        if(!Session::has('admin_name')){
 //            $this->error('请登陆！','/admin/admin/login','',2);
 //        }
-        return $this->fetch('index',['title'=>'Windows AppStore -开源软件分享应用商城']);
+        return $this->fetch('index',['title'=>'BookStore -电子书籍商城']);
     }
 
     public function login(){

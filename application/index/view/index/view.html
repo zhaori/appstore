@@ -25,13 +25,13 @@
 			<img src={$photo} width="250" height="250" alt={$title} class="view-info-logo" />
 		</div>
 		<div class="col-md-4" style="width: 60%;height: 400px">
-			<h1 class="view-info-text" id="get_name" style="position: relative;top:-20px" data-id="{$goods_id}">{$name}</h1>
+			<h1 class="view-info-text" id="get_name" style="position: relative;top:-20px" data-id="{$goods_id}">《{$name}》</h1>
 			<div style="width: 100%;height: 60px;background-color: aliceblue">
 				<div style="width: 80%;height: 50px;position: relative;top:5px">
 					<span style="font-size: 26px;">价格</span>
-					<span style="font-size: 32px;color: red;position: relative;left: 10%" id="price" data-price={$unit_price}>
+					<span style="font-size: 32px;color: red;position: relative;left: 10%" id="price" data-price={$reserve}>
 						<img src="/static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb">
-					{$unit_price}</span>
+					{$reserve}</span>
 				</div>
 			</div>
 			<div style="width: 100%;height: 60px;background-color: aliceblue;position: relative;top: 30px">
@@ -39,8 +39,8 @@
 					<label for="num">
 						<span style="font-size: 26px;">数量</span>
 					</label>
-					<input type="number" style="position: relative;left: 10%" id="num" min="1" max={$reserve} onblur="disabled_btn()"/>
-					<span style="font-size: 16px;position: relative;left: 70px" id="data_num" data-num={$reserve}>库存({$reserve})</span>
+					<input type="number" style="position: relative;left: 10%" id="num" data-price={$unit_price} min="1" max={$unit_price} onblur="disabled_btn()"/>
+					<span style="font-size: 16px;position: relative;left: 70px" id="data_num" data-num={$reserve}>库存({$unit_price})</span>
 				</div>
 			</div>
 			<div style="width: 100%;height: 60px;background-color: aliceblue;position: relative;top: 60px">
@@ -111,7 +111,7 @@
 		// 当购买数值小于库存时禁用提交按钮
 		var buy_num = $("#num").val();			//购买数量
 		var total_num = $("#data_num").data("num");
-		if (buy_num > total_num || buy_num==null || buy_num==='') {
+		if (buy_num < total_num || buy_num==null || buy_num==='') {
 			$("#buy").attr({"disabled":"disabled"});
 			$("#add").attr({"disabled":"disabled"});
 		}else {
@@ -131,7 +131,7 @@
 		var buy_num = $("#num").val();			//购买数量
 		var total_num = $("#data_num").data("num");
 		var price = $("#price").data("price")  //单价
-		$.post("/user/detail/submitCart", {
+		$.post("/index/detail/submitCart", {
             "buy_name": get_name,
             "buy_num": buy_num,
             "buy_price": price,
@@ -170,7 +170,7 @@
 	})
 
 	$("#show").click(function () {
-        location.href = "/user/detail/shoppCart?&&token=" + $.cookie('token');
+        location.href = "/index/detail/shoppCart?&&token=" + $.cookie('token');
 	})
 </script>
 </html>

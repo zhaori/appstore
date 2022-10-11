@@ -90,7 +90,7 @@
 <script>
     $("#del-btn").click(function () {
         let uid = $(this).data("id");
-        $.post("/user/order/deleteTempOrder", {"time_state": true, 'temp_id': uid}, function (data, state) {
+        $.post("/index/order/deleteTempOrder", {"time_state": true, 'temp_id': uid}, function (data, state) {
             if (data['state'] === true) {
                 $(this).closest(".tag_del").remove();
                 alert('已删除，返回上一页');

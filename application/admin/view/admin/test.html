@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑器</title>
+    <!-- 引入 css -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet">
+    <style>
+        #editor—wrapper {
+            border: 1px solid #ccc;
+            z-index: 100; /* 按需定义 */
+        }
+
+        #toolbar-container {
+            border-bottom: 1px solid #ccc;
+        }
+
+        #editor-container {
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+<div class="container pt-1 my-5 border">
+    <h2 style="text-align: center">编辑器</h2>
+    <div class="row">
+        <div class="col" id="editor—wrapper">
+            <div id="toolbar-container"><!-- 工具栏 --></div>
+            <div id="editor-container"><!-- 编辑器 --></div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                <button type="button" class="btn btn-primary btn-lg" id="submit_value" style="position: relative;left: 30%">提交内容</button>
+                <button type="button" class="btn btn-warning btn-lg" id="revocation" style="position: relative;left: 90%">撤销内容</button>
+                <button type="button" class="btn btn-danger btn-lg" id="clean_value" style="position: relative;left: 150%">清空内容</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script>
+    //初始化编辑器
+    const {createEditor, createToolbar} = window.wangEditor
+    const editor = createEditor({
+        selector: '#editor-container',
+        // config: editorConfig,
+        mode: 'default', // or 'simple'
+    })
+
+    const toolbarConfig = {}
+    toolbarConfig.excludeKeys = [       // 排除菜单组，写菜单组 key 的值即可
+
+        'group-video',
+        'group-image',
+        'emotion'
+    ]
+    const toolbar = createToolbar({
+        editor,
+        selector: '#toolbar-container',
+        config: toolbarConfig,
+        mode: 'default', // or 'simple'
+    })
+
+    editor.handleTab = () => editor.insertText('    ') //设置tab键为四个空格
+    $("#submit_value").click(function () {
+        // const html = editor.getHtml()
+        alert(editor.getHtml())
+    })
+    
+    $("#clean_value").click(function () {
+        editor.clear()
+    })
+
+    $("#revocation").click(function () {
+        editor.undo()
+    })
+</script>
+</html>

@@ -8,7 +8,10 @@
 	<title>{$title}</title>
 	{css href="__CSS__/bootstrap.min.css"}
 	<style>
-		h1 {text-align: center;}
+		h1 {
+			text-align: center;
+		}
+
 		.buy-link {
 			border: 1px solid blue;
 			background-color: white;
@@ -54,32 +57,36 @@
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#"><span style="font-size: 26px">BookStore</span></a>
+				<a class="navbar-brand" href="/"><span style="font-size: 26px">BookStore</span></a>
 			</div>
 			<div class="collapse navbar-collapse" id="topFixedNavbar1">
 				<ul class="nav navbar-nav" style="font-size: 20px">
-					<li class="active"><a href="#">首页<span class="sr-only">(current)</span></a></li>
+					<li class="active"><a href="/" id="index">首页<span class="sr-only">(current)</span></a></li>
 					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
 							aria-haspopup="true" aria-expanded="false">全部分类<span class="caret"></span></a>
 						<ul class="dropdown-menu" style="font-size: 18px">
 							{foreach $class as $key => $vo}
-								<li><a href="#">{$vo}</a></li>
+								<li><a href="javascript:" class="classify_show">{$vo}</a></li>
 							{/foreach}
 						</ul>
 					</li>
 				</ul>
 				<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
-						<input type="text" class="form-control" placeholder="搜索书籍分类或名称">
+						<input type="text" class="form-control" name="search_value" placeholder="搜索书籍名称,模糊搜索">
 					</div>
-					<button type="submit" class="btn btn-primary">搜索</button>
+					<button type="button" class="btn btn-primary" id="search">搜索</button>
 				</form>
 				<div hidden="hidden" id="login_user">{$user}</div>
 				<ul class="nav navbar-nav navbar-right" style="font-size: 20px" id="nav-url">
-					<li><a href="javascript:" id="shopping-cart"><span class="glyphicon glyphicon-shopping-cart">购物车</span></a></li>
-					<li class="login_li"><a href="javascript:" id="login"><span class="glyphicon glyphicon-log-in">登陆</span></a></li>
-					<li class="login_li"><a href="javascript:" id="register"><span class="glyphicon glyphicon-log-out">注册</span></a></li>
-					<li><a href="javascript:" ><span class="glyphicon glyphicon-user" id="user" data-name='{$user}'>{$user}</span></a></li>
+					<li><a href="javascript:" id="shopping-cart"><span
+								class="glyphicon glyphicon-shopping-cart">购物车</span></a></li>
+					<li class="login_li"><a href="javascript:" id="login"><span
+								class="glyphicon glyphicon-log-in">登陆</span></a></li>
+					<li class="login_li"><a href="javascript:" id="register"><span
+								class="glyphicon glyphicon-log-out">注册</span></a></li>
+					<li><a href="javascript:" title="点击打开用户中心"><span class="glyphicon glyphicon-user" id="user"
+								data-name='{$user}'>{$user}</span></a></li>
 				</ul>
 			</div>
 		</div>
@@ -88,23 +95,22 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1>每日推荐</h1><br>
+				<h1>{$subtitle}</h1><br>
 				<div style="background-color:#DFDFDF;width: 100%;height: auto">
 					{foreach $data as $key => $vo}
-					<div class="col-md-6 buy-link" style="margin-right: 30px;height:auto">						
-						<span class="buy-info-title">{$vo['comm_name']}</span>
-						<img src={$vo['photo']} width="250" height="250" alt={$vo['comm_name']}
-							class="buy-info-logo" data-id={$vo['comm_id']}>
-						<p class="buy-info-text" style="position:relative;top:10px">{$vo['column_synopsis']}</p>
+					<div class="col-md-6 buy-link" style="margin-right: 30px;height:auto">
+						<br>
+						<img src={$vo['photo']} width="250" height="250" alt={$vo['comm_name']} class="buy-info-logo"
+							data-id={$vo['comm_id']}>
 						<div style="position:relative;top:45px">
-							<img src="../static/images/RMB.png" alt="人民币" width="25" height="25" class="buy-info-rmb"><span
-							class="buy-info-rmb-price">{$vo['comm_quantity']}</span>
+							<img src="../static/images/RMB.png" alt="人民币" width="25" height="25"
+								class="buy-info-rmb"><span class="buy-info-rmb-price">{$vo['comm_reserve']}</span>
 						</div>
 					</div>
-					{/foreach}													
+					{/foreach}
+				</div>
 			</div>
 		</div>
-	</div>
 	</div>
 </body>
 {js href="__JS__/jquery-3.6.0.min.js"}
@@ -114,13 +120,13 @@
 <script>
 	const select_user = $('#user');
 	if (select_user.text() === select_user.data('name')) {
-		$('#nav-url').append("<li id='login_out_li'><a href='javascript:' id='login_out'><span class='glyphicon glyphicon-off'>退出登录</span></a></li>")
+		$('#nav-url').append("<li id='login_out_li'><a href='javascript:' id='login_out'><span class='glyphicon glyphicon-off'>退出登录</span></a></li>");
 		$('#login_out').show();
 		$('#login').hide();
 		$('#register').hide();
 	}
 
-	if (select_user.text() === ''){
+	if (select_user.text() === '') {
 		$('#login_out_li').hide();
 		$('#login').show();
 		$('#register').show();
@@ -128,6 +134,11 @@
 
 </script>
 <script>
+
+	$('#user').click(function () {
+		alert('用户中心')
+	})
+
 	$("#login").click(function () {
 		location.href = "/index/index/login";
 	})
@@ -142,16 +153,33 @@
 	})
 
 	$("#shopping-cart").click(function () {
-        location.href = "/index/Detail/shoppCart?token=" + $.cookie('token');
+		location.href = "/index/Detail/shoppCart?token=" + $.cookie('token');
 	})
 
 	$("#login_out").click(function () {
-		$.post("/user/user/quit",{"value":true},
-		 function(data, state){
-			if (data['state']===true){
-				location.reload()
+		$.post("/index/index/quit", { "value": true },
+			function (data, state) {
+				if (data['state'] === true) {
+					location.reload()
+				}
+			})
+	})
+
+	$("#search").click(function () {
+		const get_value = $("input[name='search_value']").val()
+		$.post("/index/index/searchHtml", { "search_text": get_value },
+			function (data, state) {
+				if (data['state'] === true) {
+					location.href = data['url'] + "?name=" + data['comm_name'] + "&&id=" + data['comm_id'] + "&&quantity=" + data['comm_quantity']
+				}
 			}
-		})
+		)
+
+	})
+
+	$(".classify_show").click(function () {
+		location.href = "/index/index/classifyindex?classify_name=" + $(this).text()
 	})
 </script>
+
 </html>
